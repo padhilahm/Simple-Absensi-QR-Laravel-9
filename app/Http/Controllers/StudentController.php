@@ -12,7 +12,7 @@ use App\Http\Requests\UpdateStudentRequest;
 
 class StudentController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
         $paginate = 10;
 
@@ -148,6 +148,10 @@ class StudentController extends Controller
             'code' => 500,
             'message' => 'Student not deleted'
         ]);
+        // return response()->json([
+        //     'code' => 500,
+        //     'message' => $student
+        // ]);
     }
 
     public function destroyMulti()

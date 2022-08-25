@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('student_id')->unsigned();
+            $table->string('student_name')->nullable();
+            $table->string('class_name')->nullable();
             $table->timestamps();
         });
     }

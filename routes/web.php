@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StudentClassController;
+use App\Models\StudentClass;
 
 /*
 |--------------------------------------------------------------------------
@@ -32,4 +34,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('/student', StudentController::class);
     Route::get('/student-search', [StudentController::class, 'search'])->name('student.search');
     Route::delete('/student-m', [StudentController::class, 'destroyMulti'])->name('student.destroy-multi');
+
+    Route::get('/class', [StudentClassController::class, 'index'])->name('class.index');
+    Route::post('/class', [StudentClassController::class, 'store'])->name('class.store');
+    Route::get('/class/{studentClass}', [StudentClassController::class, 'show'])->name('class.show');
+    Route::put('/class/{studentClass}', [StudentClassController::class, 'update'])->name('class.update');
+    Route::delete('/class/{studentClass}', [StudentClassController::class, 'destroy'])->name('class.destroy');
 });

@@ -217,7 +217,7 @@
                         }, 1000);
                     } else if (data.code == 400) {
                         // show error message
-                        showToast('bg-danger', 'top-0 end-0', data.message);
+                        // showToast('bg-danger', 'top-0 end-0', data.message);
 
                         $('#alert_student_id_number').text(data.errors.student_id_number);
                         $('#alert_name').text(data.errors.name);
@@ -226,6 +226,15 @@
                         // show error message
                         showToast('bg-danger', 'top-0 end-0', data.message);
                     }
+                },
+                error: function(data) {
+                    // show error message
+                    swal({
+                        title: "Error!",
+                        text: "Something went wrong!",
+                        icon: "error",
+                        button: "OK",
+                    });
                 }
             });
         });
@@ -262,7 +271,7 @@
         function add() {
             $('#alert_student_id_number').text('');
             $('#alert_name').text('');
-            $('#alert_student_class_id').text();
+            $('#alert_student_class_id').text('');
             $('#exampleModalLabel1').text('Add Student');
             $('#student_id_number').val('');
             $('#name').val('');
@@ -311,6 +320,14 @@
         function multi_delete() {
             // swal("Good job!", "You clicked the button!", "success");
             // sweet alert
+            let ids = [];
+            $.each($("input[name='checkbox']:checked"), function() {
+                ids.push($(this).val());
+            });
+            if (ids == '') {
+                return swal("No data selected!", "", "warning");
+            }
+
             swal({
                 title: "Are you sure?",
                 text: "Once deleted, you will not be able to recover this data!",
@@ -321,10 +338,14 @@
             }).then((result) => {
                 if (result) {
                     // get all id of checkbox that is checked
-                    let ids = [];
-                    $.each($("input[name='checkbox']:checked"), function() {
-                        ids.push($(this).val());
-                    });
+                    // let ids = [];
+                    // $.each($("input[name='checkbox']:checked"), function() {
+                    //     ids.push($(this).val());
+                    // });
+                    // if (ids == '') {
+                    //     return showToast('bg-danger', 'top-0 end-0', 'Please select data to delete');
+                    // }
+
                     console.log(ids);
                     // ajax request
                     $.ajax({
