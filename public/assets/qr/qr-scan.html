@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Create QR Code</title>
+</head>
+<body>
+
+    <canvas></canvas>
+    <br>
+    <select></select>
+
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/qrcodelib.js"></script>
+    <script type="text/javascript" src="js/webcodecamjquery.js"></script>
+    <script type="text/javascript">
+        //menampilkan hasil dari scan qr code
+        var arg = {
+            resultFunction: function(result) {
+                $('body').append($('<li>' + result.format + ': ' + result.code + '</li>'));
+            }
+        };
+
+        // proses scanning qr code dari kamera
+        var decoder = $("canvas").WebCodeCamJQuery(arg).data().plugin_WebCodeCamJQuery;
+
+        // menampilkan dan memilih kamera yang tersedia
+        decoder.buildSelectMenu("select");
+        decoder.play();
+        $('select').on('change', function(){
+            decoder.stop().play();
+        });
+    </script>
+</body>
+</html>

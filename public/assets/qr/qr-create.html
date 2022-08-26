@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Create QR Code</title>
+    </head>
+    <body>
+        <textarea id="teks" rows="5" cols="50">padhil.my.id</textarea> <br />
+        <button onclick="generate_qrcode()">Generate QR</button>
+        <div id="qrcode"></div>
+    </body>
+
+    <script type="text/javascript" src="js/jquery.js"></script>
+    <script type="text/javascript" src="js/jquery-qrcode-0.18.0.js"></script>
+
+    <script type="text/javascript">
+        function generate_qrcode() {
+            var teks = document.getElementById("teks");
+
+            //menghapus canvas pada id qrcode
+            $("#qrcode canvas").remove();
+
+            //menampilkan qr code ke id qrcode dari elemen id teks
+            $("#qrcode").qrcode({
+                render: "canvas",
+                text: teks.value,
+            });
+        }
+    </script>
+</html>

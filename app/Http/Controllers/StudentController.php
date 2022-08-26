@@ -165,4 +165,10 @@ class StudentController extends Controller
             'message' => 'Students deleted successfully'
         ]);
     }
+
+    public function card($studentClassId = '')
+    {
+        $students = Student::with('studentClass')->where('student_class_id', $studentClassId)->get();
+        return view('student.card', compact('students'));
+    }
 }

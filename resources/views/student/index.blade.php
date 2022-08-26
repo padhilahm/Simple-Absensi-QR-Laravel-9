@@ -30,7 +30,9 @@
                     </h3>
                 </div>
                 <div class="bd-highlight pt-4">
-                    <button type="button" class="btn btn-danger text-end" onclick="multi_delete()">Delete</button>
+                    <button type="button" class="btn btn-secondary text-end" data-bs-toggle="modal"
+                        data-bs-target="#basicModal-card">Card Print</button>
+                    {{-- <button type="button" class="btn btn-danger text-end" onclick="multi_delete()">Delete</button> --}}
                     <button type="button" class="btn btn-primary me-3 text-end" onclick="add()">Add Student</button>
                     <form action="">
                         <input type="text" placeholder="Search ..." class="form-control mt-3" name="search"
@@ -88,6 +90,38 @@
                                 <button type="button" class="btn btn-primary" id="btn_save">Save changes</button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="basicModal-card" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel1">Card Print</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col mb-3">
+                                    <label for="email" class="form-label">Class</label>
+                                    <select name="student_class_id_print" id="student_class_id_print"
+                                        class="form-control">
+                                        <option value=""> - Select Class - </option>
+                                        @foreach ($classes as $class)
+                                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                Close
+                            </button>
+                            <button type="button" class="btn btn-primary" id="btn_print">Print</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -151,8 +185,11 @@
 
             </div>
             <div class="mt-3 mx-2">
+                <button type="button" class="btn btn-sm btn-secondary text-end m-2" onclick="multi_delete()">Delete
+                    Selected</button>
                 {{ $students->links() }}
             </div>
+
         </div>
         <!--/ Basic Bootstrap Table -->
 
@@ -421,5 +458,14 @@
             toastPlacement = new bootstrap.Toast(toastPlacementExample);
             toastPlacement.show();
         }
+
+        // if btn_print click
+        $('#btn_print').click(function() {
+            let student_class_id_print = $('#student_class_id_print').val();
+            if (student_class_id_print == '') {
+                return showToast('bg-danger', 'top-0 end-0', 'Please select class');
+            }
+            window.location.href = '/student-card/' + student_class_id_print;
+        });
     </script>
 @endsection
