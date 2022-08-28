@@ -5,80 +5,65 @@ namespace App\Http\Controllers;
 use App\Models\Setting;
 use App\Http\Requests\StoreSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
+use App\Models\User;
 
 class SettingController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        $userId = auth()->user()->id;
+        $setting = Setting::first();
+        $user = User::find($userId);
+        return view('setting.index-attendance', compact('setting', 'user'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function indexUser()
     {
-        //
+        $userId = auth()->user()->id;
+        $setting = Setting::first();
+        $user = User::find($userId);
+        return view('setting.index', compact('setting', 'user'));
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreSettingRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreSettingRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Setting  $setting
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Setting $setting)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Setting  $setting
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Setting $setting)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateSettingRequest  $request
-     * @param  \App\Models\Setting  $setting
-     * @return \Illuminate\Http\Response
-     */
     public function update(UpdateSettingRequest $request, Setting $setting)
     {
-        //
+        $validate = [
+            'attendance_start_time' => 'required',
+            'attendance_end_time' => 'required',
+        ];
+
+        $request->validate($validate);
+
+        $id = $request->id;
+        $setting = Setting::find($id);
+        $setting->update($request->all());
+
+        return redirect()->route('setting.index-attendance')->with('success', 'Setting berhasil diubah');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Setting  $setting
-     * @return \Illuminate\Http\Response
-     */
+    public function updateUser(UpdateSettingRequest $request)
+    {
+        $validate = [
+            'name' => 'required|min:3',
+            'email' => 'required|email',
+            'password' => 'nullable|min:8',
+            're_password' => 'nullable|same:password',
+        ];
+
+        $request->validate($validate);
+        $password = $request->password;
+
+        $userId = auth()->user()->id;
+        $user = User::find($userId);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        if ($password) {
+            $user->password = bcrypt($password);
+        }
+        $user->save();
+        return redirect()->route('setting.index')->with('success', 'User berhasil diubah');
+    }
+
     public function destroy(Setting $setting)
     {
         //

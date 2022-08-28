@@ -1,12 +1,13 @@
 <?php
 
 use App\Models\Student;
+use App\Models\StudentClass;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StudentClassController;
-use App\Models\StudentClass;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,4 +42,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/class/{studentClass}', [StudentClassController::class, 'show'])->name('class.show');
     Route::put('/class/{studentClass}', [StudentClassController::class, 'update'])->name('class.update');
     Route::delete('/class/{studentClass}', [StudentClassController::class, 'destroy'])->name('class.destroy');
+
+    Route::get('/setting-attendance', [SettingController::class, 'index'])->name('setting.index-attendance');
+    Route::get('/setting', [SettingController::class, 'indexUser'])->name('setting.index-user');
+    Route::get('/setting', [SettingController::class, 'indexUser'])->name('setting.index');
+    Route::post('/setting/{id}', [SettingController::class, 'update'])->name('setting.update');
+    Route::post('/setting-user', [SettingController::class, 'updateUser'])->name('setting.update-user');
 });
