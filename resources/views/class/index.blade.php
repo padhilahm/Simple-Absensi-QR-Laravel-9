@@ -7,7 +7,7 @@
     <div class="container-xxl flex-grow-1 container-p-y">
 
 
-        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Basic Tables</h4>
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Data /</span> Kelas</h4>
 
         {{-- alert --}}
         @if (session('success'))
@@ -21,20 +21,20 @@
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Add Class</h4>
+                        <h4>Tambah Kelas</h4>
                     </div>
                     <div class="card-body">
                         <form method="post" id="form-save">
                             @csrf
                             <div class="form-group">
                                 <input type="hidden" id="class_id">
-                                <label for="name">Name</label>
+                                <label for="name">Nama</label>
                                 <input type="text" class="form-control" id="name" name="name"
                                     placeholder="Enter name">
                                 <small class="text-danger" id="alert_name"></small>
                             </div>
                             <div class="form-group mt-2">
-                                <button type="button" class="btn btn-primary" id="btn-save">Save</button>
+                                <button type="button" class="btn btn-primary" id="btn-save">Simpan</button>
                                 <span id="cancel-update">
                                 </span>
                             </div>
@@ -51,7 +51,7 @@
                     <div class="d-flex justify-content-between bd-highlight">
                         <div class="bd-highlight">
                             <h4>
-                                <div class="m-3">Data Class</div>
+                                <div class="m-3">Data Kelas</div>
                             </h4>
                         </div>
                     </div>
@@ -75,8 +75,8 @@
                             <thead>
                                 <tr>
                                     <th width="3%">No</th>
-                                    <th>Name</th>
-                                    <th class="text-end">Actions</th>
+                                    <th>Nama</th>
+                                    <th class="text-end">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody class="table-border-bottom-0">
@@ -161,10 +161,10 @@
         function edit(id) {
             $('#alert_name').text('');
             $('#name').val('');
-            $('#btn-save').text('Update');
-            $('.card-header h4').text('Edit Class');
+            $('#btn-save').text('Ubah');
+            $('.card-header h4').text('Edit Kelas');
             $('#cancel-update').html(
-                '<button type="button" class="btn btn-secondary" onclick="cancel()">Cancel Update</button>'
+                '<button type="button" class="btn btn-secondary" onclick="cancel()">Batal Ubah</button>'
             );
 
             // ajax request
@@ -191,12 +191,12 @@
 
             // sweet alert
             swal({
-                title: "Are you sure?",
-                text: "Once deleted, you will not be able to recover this data!",
+                title: "Apakah anda yakin?",
+                text: "Data yang dihapus tidak dapat dikembalikan!",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
-                buttons: ["Cancel", "Delete"],
+                buttons: ["Batal", "Hapus"],
             }).then((result) => {
                 if (result) {
                     // ajax request
@@ -229,8 +229,8 @@
         function cancel() {
             $('#alert_name').text('');
             $('#name').val('');
-            $('#btn-save').text('Save');
-            $('.card-header h4').text('Add Class');
+            $('#btn-save').text('Simpan');
+            $('.card-header h4').text('Tambah Kelas');
             $('#cancel-update').html('');
             $('#class_id').val('');
         };

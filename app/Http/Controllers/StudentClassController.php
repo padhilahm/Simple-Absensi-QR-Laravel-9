@@ -42,13 +42,13 @@ class StudentClassController extends Controller
         if ($class) {
             return response()->json([
                 'code' => 200,
-                'message' => 'Class created successfully'
+                'message' => 'Kelas berhasil ditambahkan'
             ]);
         }
 
         return response()->json([
             'code' => 500,
-            'message' => 'Class not created'
+            'message' => 'Kelas gagal ditambahkan'
         ]);
     }
     public function show(StudentClass $studentClass)
@@ -73,7 +73,7 @@ class StudentClassController extends Controller
             return response()->json([
                 'code' => 400,
                 'errors' => $validate->errors(),
-                'message' => 'Class not updated'
+                'message' => 'Kelas gagal diubah'
             ]);
         }
 
@@ -84,13 +84,13 @@ class StudentClassController extends Controller
         if ($studentClass) {
             return response()->json([
                 'code' => 200,
-                'message' => 'Class updated successfully',
+                'message' => 'Kelas berhasil diubah',
                 'class' => $studentClass
             ]);
         }
         return response()->json([
             'code' => 500,
-            'message' => 'Class not updated'
+            'message' => 'Kelas gagal diubah'
         ]);
     }
     public function destroy(StudentClass $studentClass)
@@ -98,7 +98,7 @@ class StudentClassController extends Controller
         if ($studentClass->delete()) {
             return response()->json([
                 'code' => 200,
-                'message' => 'Class deleted successfully'
+                'message' => 'Kelas berhasil dihapus'
             ]);
         }
         return response()->json([

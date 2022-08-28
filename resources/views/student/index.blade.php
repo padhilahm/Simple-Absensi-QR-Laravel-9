@@ -7,7 +7,7 @@
     <div class="container-xxl flex-grow-1 container-p-y">
 
 
-        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Tables /</span> Basic Tables</h4>
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Data /</span> Siswa</h4>
 
         {{-- alert --}}
         @if (session('success'))
@@ -26,14 +26,14 @@
                         <div class="m-3">Data</div>
                     </h4>
                     <h3>
-                        <div class="ms-3">Students</div>
+                        <div class="ms-3">Siswa</div>
                     </h3>
                 </div>
                 <div class="bd-highlight pt-4">
                     <button type="button" class="btn btn-secondary text-end" data-bs-toggle="modal"
-                        data-bs-target="#basicModal-card">Card Print</button>
+                        data-bs-target="#basicModal-card">Cetak Kartu</button>
                     {{-- <button type="button" class="btn btn-danger text-end" onclick="multi_delete()">Delete</button> --}}
-                    <button type="button" class="btn btn-primary me-3 text-end" onclick="add()">Add Student</button>
+                    <button type="button" class="btn btn-primary me-3 text-end" onclick="add()">Tambah Siswa</button>
                     <form action="">
                         <input type="text" placeholder="Search ..." class="form-control mt-3" name="search"
                             id="search">
@@ -46,7 +46,7 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel1">Add Student</h5>
+                            <h5 class="modal-title" id="exampleModalLabel1">Tambah Siswa</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <form action="/student" method="POST">
@@ -56,25 +56,25 @@
                             <div class="modal-body">
                                 <div class="row">
                                     <div class="col mb-3">
-                                        <label for="studentIdNumber" class="form-label">Student ID Number</label>
+                                        <label for="studentIdNumber" class="form-label">NIS</label>
                                         <input type="text" id="student_id_number" name="student_id_number"
-                                            class="form-control" placeholder="Enter Student ID Number" required />
+                                            class="form-control" placeholder="Masukkan NIS" required />
                                         <small class="text-danger" id="alert_student_id_number"></small>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col mb-3">
-                                        <label for="name" class="form-label">Name</label>
+                                        <label for="name" class="form-label">Nama</label>
                                         <input type="text" id="name" name="name" class="form-control"
-                                            placeholder="Enter Name" required />
+                                            placeholder="Masukkan Nama" required />
                                         <small class="text-danger" id="alert_name"></small>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col mb-3">
-                                        <label for="email" class="form-label">Class</label>
+                                        <label for="email" class="form-label">Kelas</label>
                                         <select name="student_class_id" id="student_class_id" class="form-control">
-                                            <option value=""> - Select Class - </option>
+                                            <option value=""> - Pilih Kelas - </option>
                                             @foreach ($classes as $class)
                                                 <option value="{{ $class->id }}">{{ $class->name }}</option>
                                             @endforeach
@@ -85,9 +85,9 @@
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                    Close
+                                    Batal
                                 </button>
-                                <button type="button" class="btn btn-primary" id="btn_save">Save changes</button>
+                                <button type="button" class="btn btn-primary" id="btn_save">Simpan</button>
                             </div>
                         </form>
                     </div>
@@ -99,16 +99,16 @@
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel1">Card Print</h5>
+                            <h5 class="modal-title" id="exampleModalLabel1">Cetak Kartu</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
                                 <div class="col mb-3">
-                                    <label for="email" class="form-label">Class</label>
+                                    <label for="email" class="form-label">Kelas</label>
                                     <select name="student_class_id_print" id="student_class_id_print"
                                         class="form-control">
-                                        <option value=""> - Select Class - </option>
+                                        <option value=""> - Pilih Kelas - </option>
                                         @foreach ($classes as $class)
                                             <option value="{{ $class->id }}">{{ $class->name }}</option>
                                         @endforeach
@@ -118,9 +118,9 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
-                                Close
+                                Tutup
                             </button>
-                            <button type="button" class="btn btn-primary" id="btn_print">Print</button>
+                            <button type="button" class="btn btn-primary" id="btn_print">Cetak</button>
                         </div>
                     </div>
                 </div>
@@ -146,9 +146,9 @@
                         <tr>
                             <th width="3%">#</th>
                             <th width="3%">No</th>
-                            <th>Student ID Number</th>
-                            <th>Name</th>
-                            <th class="text-end">Actions</th>
+                            <th>NIS</th>
+                            <th>Nama</th>
+                            <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="table-border-bottom-0">
@@ -175,7 +175,7 @@
                                         Edit</a>
                                     <a class="btn-sm btn-danger" href="javascript:void(0);"
                                         onclick="delete_({{ $student->id }})"><i class="bx bx-trash me-1"></i>
-                                        Delete</a>
+                                        Hapus</a>
                                 </td>
                             </tr>
                         @endforeach
@@ -185,8 +185,8 @@
 
             </div>
             <div class="mt-3 mx-2">
-                <button type="button" class="btn btn-sm btn-secondary text-end m-2" onclick="multi_delete()">Delete
-                    Selected</button>
+                <button type="button" class="btn btn-sm btn-secondary text-end m-2" onclick="multi_delete()">Hapus yang
+                    dipilih</button>
                 {{ $students->links() }}
             </div>
 
@@ -214,7 +214,7 @@
             $('#alert_name').text('');
             $('#alert_student_class_id').text();
 
-            if (mode == 'Add Student') {
+            if (mode == 'Tambah Siswa') {
                 type_mode = 'POST';
                 url_mode = '/student';
             } else {
@@ -244,7 +244,7 @@
                         // set time 1s
                         setTimeout(function() {
                             // reload url
-                            if (mode == 'Add Student') {
+                            if (mode == 'Tambah Siswa') {
                                 let url = '/student';
                                 window.location.href = url;
                             } else {
@@ -268,7 +268,7 @@
                     // show error message
                     swal({
                         title: "Error!",
-                        text: "Something went wrong!",
+                        text: "Terjadi kesalahan, silahkan coba lagi!",
                         icon: "error",
                         button: "OK",
                     });
@@ -281,7 +281,7 @@
             $('#alert_student_id_number').text('');
             $('#alert_name').text('');
             $('#alert_student_class_id').text('');
-            $('#exampleModalLabel1').text('Edit Student');
+            $('#exampleModalLabel1').text('Edit Siswa');
 
             // ajax request
             $.ajax({
@@ -309,7 +309,7 @@
             $('#alert_student_id_number').text('');
             $('#alert_name').text('');
             $('#alert_student_class_id').text('');
-            $('#exampleModalLabel1').text('Add Student');
+            $('#exampleModalLabel1').text('Tambah Siswa');
             $('#student_id_number').val('');
             $('#name').val('');
             $('#student_class_id').val('');
@@ -322,12 +322,12 @@
 
             // sweet alert
             swal({
-                title: "Are you sure?",
-                text: "Once deleted, you will not be able to recover this data!",
+                title: "Apakah anda yakin?",
+                text: "Data yang dihapus tidak dapat dikembalikan!",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
-                buttons: ["Cancel", "Delete"],
+                buttons: ["Batal", "Hapus"],
             }).then((result) => {
                 if (result) {
                     // ajax request
@@ -366,8 +366,8 @@
             }
 
             swal({
-                title: "Are you sure?",
-                text: "Once deleted, you will not be able to recover this data!",
+                title: "Apakah anda yakin?",
+                text: "Data yang dihapus tidak dapat dikembalikan!",
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
@@ -463,7 +463,7 @@
         $('#btn_print').click(function() {
             let student_class_id_print = $('#student_class_id_print').val();
             if (student_class_id_print == '') {
-                return showToast('bg-danger', 'top-0 end-0', 'Please select class');
+                return showToast('bg-danger', 'top-0 end-0', 'Mohon pilih kelas terlebih dahulu');
             }
             window.location.href = '/student-card/' + student_class_id_print;
         });

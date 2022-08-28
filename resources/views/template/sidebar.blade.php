@@ -67,25 +67,25 @@
 
 
         <li class="menu-header small text-uppercase">
-            <span class="menu-header-text">Pages</span>
+            <span class="menu-header-text">Halaman</span>
         </li>
 
         <li class="menu-item {{ Request::is('student*') ? 'active' : '' }}">
             <a href="/student" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-id-card"></i>
-                <div data-i18n="Students">Students</div>
+                <div data-i18n="Students">Siswa</div>
             </a>
         </li>
         <li class="menu-item {{ Request::is('class*') ? 'active' : '' }}">
             <a href="/class" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-home-alt"></i>
-                <div data-i18n="Classes">Classes</div>
+                <div data-i18n="Classes">Kelas</div>
             </a>
         </li>
         <li class="menu-item {{ Request::is('setting*') ? 'active' : '' }}">
             <a href="/setting" class="menu-link">
                 <i class="menu-icon tf-icons bx bx-slider"></i>
-                <div data-i18n="Settings">Settings</div>
+                <div data-i18n="Settings">Pengaturan</div>
             </a>
         </li>
     </ul>

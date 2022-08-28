@@ -72,14 +72,14 @@ class StudentController extends Controller
         if ($student) {
             return response()->json([
                 'code' => 200,
-                'message' => 'Student created successfully',
+                'message' => 'Siwa berhasil ditambahkan',
                 'student' => $student
             ]);
         }
 
         return response()->json([
             'code' => 500,
-            'message' => 'Student not created'
+            'message' => 'Siwa gagal ditambahkan'
         ]);
     }
 
@@ -115,7 +115,7 @@ class StudentController extends Controller
             return response()->json([
                 'code' => 400,
                 'errors' => $validate->errors(),
-                'message' => 'Student not updated'
+                'message' => 'Siwa gagal diubah'
             ]);
         }
 
@@ -126,13 +126,13 @@ class StudentController extends Controller
         if ($student) {
             return response()->json([
                 'code' => 200,
-                'message' => 'Student updated successfully',
+                'message' => 'Siwa berhasil diubah',
                 'student' => $student
             ]);
         }
         return response()->json([
             'code' => 500,
-            'message' => 'Student not updated'
+            'message' => 'Siwa gagal diubah'
         ]);
     }
 
@@ -141,17 +141,13 @@ class StudentController extends Controller
         if ($student->delete()) {
             return response()->json([
                 'code' => 200,
-                'message' => 'Student deleted successfully'
+                'message' => 'Siwa berhasil dihapus'
             ]);
         }
         return response()->json([
             'code' => 500,
-            'message' => 'Student not deleted'
+            'message' => 'Siwa gagal dihapus'
         ]);
-        // return response()->json([
-        //     'code' => 500,
-        //     'message' => $student
-        // ]);
     }
 
     public function destroyMulti()
@@ -162,13 +158,15 @@ class StudentController extends Controller
         });
         return response()->json([
             'code' => 200,
-            'message' => 'Students deleted successfully'
+            'message' => 'Siwa berhasil dihapus'
         ]);
     }
 
     public function card($studentClassId = '')
     {
-        $students = Student::with('studentClass')->where('student_class_id', $studentClassId)->get();
+        $students = Student::with('studentClass')
+            ->where('student_class_id', $studentClassId)
+            ->get();
         return view('student.card', compact('students'));
     }
 }
