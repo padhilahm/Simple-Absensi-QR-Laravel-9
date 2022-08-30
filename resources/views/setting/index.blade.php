@@ -65,6 +65,13 @@
                                         value="{{ old('email', $user->email) }}" placeholder="Masukkan Email" />
                                     <small class="text-danger">{{ $errors->first('email') }}</small>
                                 </div>
+                                <div class="mb-3 col-md-12">
+                                    <label for="firstName" class="form-label">Nama Sekolah</label>
+                                    <input class="form-control" type="text" id="school_name" name="school_name"
+                                        value="{{ old('school_name', $user->school_name) }}"
+                                        placeholder="Masukkan Nama Sekolah" autofocus />
+                                    <small class="text-danger">{{ $errors->first('school_name') }}</small>
+                                </div>
                                 <div class="mb-3 col-md-6">
                                     <label for="email" class="form-label">Password</label>
                                     <input class="form-control" type="password" id="password" name="password"

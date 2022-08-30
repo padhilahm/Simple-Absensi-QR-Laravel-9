@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Setting;
 use App\Models\Student;
 use App\Models\StudentClass;
 use Illuminate\Support\Facades\DB;
@@ -167,9 +169,10 @@ class StudentController extends Controller
 
     public function card($studentClassId = '')
     {
+        $user = User::find(auth()->user()->id);
         $students = Student::with('studentClass')
             ->where('student_class_id', $studentClassId)
             ->get();
-        return view('student.card', compact('students'));
+        return view('student.card', compact('students', 'user'));
     }
 }

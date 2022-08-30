@@ -50,7 +50,9 @@
 
     @foreach ($students as $student)
         <div class="kartu">
-            <div class="header">SMA Banjarbaru</div>
+            <div class="header">
+                {{ $user->school_name }}
+            </div>
             <hr />
             <table>
                 <tr>

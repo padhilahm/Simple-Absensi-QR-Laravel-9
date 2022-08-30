@@ -48,6 +48,7 @@ class SettingController extends Controller
             'email' => 'required|email',
             'password' => 'nullable|min:8',
             're_password' => 'nullable|same:password',
+            'school_name' => 'required|min:3',
         ];
 
         $request->validate($validate);
@@ -57,6 +58,7 @@ class SettingController extends Controller
         $user = User::find($userId);
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->school_name = $request->school_name;
         if ($password) {
             $user->password = bcrypt($password);
         }
