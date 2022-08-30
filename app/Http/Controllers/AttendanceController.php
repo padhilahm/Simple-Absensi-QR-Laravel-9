@@ -6,6 +6,7 @@ use App\Models\Student;
 use App\Models\Attendance;
 use App\Http\Requests\StoreAttendanceRequest;
 use App\Http\Requests\UpdateAttendanceRequest;
+use App\Models\Setting;
 
 class AttendanceController extends Controller
 {
@@ -35,14 +36,22 @@ class AttendanceController extends Controller
             ]);
         }
 
+        $setting = Setting::first();
+        if ($setting->attendance_start_time > date('H:i:s') || $setting->attendance_end_time < date('H:i:s')) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Absensi belum dibuka atau sudah ditutup'
+            ]);
+        }
+
         // check attendance
         $attendance = Attendance::where('student_id', $student->id)
             ->where('date', date('Y-m-d'))
             ->first();
         if ($attendance) {
             return response()->json([
-                'status' => 'error',
-                'message' => 'Kamu sudah absen hari ini'
+                'status' => 'success',
+                'message' => $student->name . ' sudah absen hari ini'
             ]);
         }
 
