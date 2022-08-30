@@ -1,36 +1,45 @@
 /*!
- * WebCodeCamJS 2.7.0 javascript Bar code and QR code decoder 
+ * WebCodeCamJS 2.7.0 javascript Bar code and QR code decoder
  * Author: Tóth András
  * Web: http://atandrastoth.co.uk
  * email: atandrastoth@gmail.com
  * Licensed under the MIT license
  */
-var WebCodeCamJS = function(element) {
-    'use strict';
+var WebCodeCamJS = function (element) {
+    "use strict";
     this.Version = {
-        name: 'WebCodeCamJS',
-        version: '2.7.0',
-        author: 'Tóth András',
+        name: "WebCodeCamJS",
+        version: "2.7.0",
+        author: "Tóth András",
     };
     var mediaDevices = window.navigator.mediaDevices;
-    mediaDevices.getUserMedia = function(c) {
-        return new Promise(function(y, n) {
-            (window.navigator.getUserMedia || window.navigator.mozGetUserMedia || window.navigator.webkitGetUserMedia).call(navigator, c, y, n);
+    mediaDevices.getUserMedia = function (c) {
+        return new Promise(function (y, n) {
+            (
+                window.navigator.getUserMedia ||
+                window.navigator.mozGetUserMedia ||
+                window.navigator.webkitGetUserMedia
+            ).call(navigator, c, y, n);
         });
-    }
-    HTMLVideoElement.prototype.streamSrc = ('srcObject' in HTMLVideoElement.prototype) ? function(stream) {
-        this.srcObject = !!stream ? stream : null;
-    } : function(stream) {
-        if (!!stream) {
-            this.src = (window.URL || window.webkitURL).createObjectURL(stream);
-        } else {
-            this.removeAttribute('src');
-        }
     };
+    HTMLVideoElement.prototype.streamSrc =
+        "srcObject" in HTMLVideoElement.prototype
+            ? function (stream) {
+                  this.srcObject = !!stream ? stream : null;
+              }
+            : function (stream) {
+                  if (!!stream) {
+                      this.src = (
+                          window.URL || window.webkitURL
+                      ).createObjectURL(stream);
+                  } else {
+                      this.removeAttribute("src");
+                  }
+              };
     var videoSelect, lastImageSrc, con, beepSound, w, h, lastCode;
     var display = Q(element),
         DecodeWorker = null,
-        video = html('<video muted autoplay playsinline></video>'),
+        video = html("<video muted autoplay playsinline></video>"),
         sucessLocalDecode = false,
         localImage = false,
         flipMode = [1, 3, 6, 8],
@@ -51,52 +60,57 @@ var WebCodeCamJS = function(element) {
                 video: {
                     mandatory: {
                         maxWidth: 1280,
-                        maxHeight: 720
+                        maxHeight: 720,
                     },
-                    optional: [{
-                        sourceId: true
-                    }]
+                    optional: [
+                        {
+                            sourceId: true,
+                        },
+                    ],
                 },
                 audio: false,
             },
             flipVertical: false,
             flipHorizontal: false,
             zoom: 0,
-            beep: 'audio/beep.mp3',
-            decoderWorker: 'js/DecoderWorker.js',
+            beep: "/assets/qr/audio/beep.mp3",
+            decoderWorker: "js/DecoderWorker.js",
             brightness: 0,
             autoBrightnessValue: 0,
             grayScale: 0,
             contrast: 0,
             threshold: 0,
             sharpness: [],
-            resultFunction: function(res) {
+            resultFunction: function (res) {
                 console.log(res.format + ": " + res.code);
             },
-            cameraSuccess: function(stream) {
-                console.log('cameraSuccess');
+            cameraSuccess: function (stream) {
+                console.log("cameraSuccess");
             },
-            canPlayFunction: function() {
-                console.log('canPlayFunction');
+            canPlayFunction: function () {
+                console.log("canPlayFunction");
             },
-            getDevicesError: function(error) {
+            getDevicesError: function (error) {
                 console.log(error);
             },
-            getUserMediaError: function(error) {
+            getUserMediaError: function (error) {
                 console.log(error);
             },
-            cameraError: function(error) {
+            cameraError: function (error) {
                 console.log(error);
-            }
+            },
         };
 
     function init() {
         var constraints = changeConstraints();
         try {
-            mediaDevices.getUserMedia(constraints).then(cameraSuccess).catch(function(error) {
-                options.cameraError(error);
-                return false;
-            });
+            mediaDevices
+                .getUserMedia(constraints)
+                .then(cameraSuccess)
+                .catch(function (error) {
+                    options.cameraError(error);
+                    return false;
+                });
         } catch (error) {
             options.getUserMediaError(error);
             return false;
@@ -110,8 +124,8 @@ var WebCodeCamJS = function(element) {
                 init();
             }
             const p = video.play();
-            if (p && (typeof Promise !== 'undefined') && (p instanceof Promise)) {
-                p.catch(e => null);
+            if (p && typeof Promise !== "undefined" && p instanceof Promise) {
+                p.catch((e) => null);
             }
             delay();
         }
@@ -120,8 +134,8 @@ var WebCodeCamJS = function(element) {
     function stop() {
         delayBool = true;
         const p = video.pause();
-        if (p && (typeof Promise !== 'undefined') && (p instanceof Promise)) {
-            p.catch(e => null);
+        if (p && typeof Promise !== "undefined" && p instanceof Promise) {
+            p.catch((e) => null);
         }
         video.streamSrc(null);
         con.clearRect(0, 0, w, h);
@@ -136,15 +150,15 @@ var WebCodeCamJS = function(element) {
     function pause() {
         delayBool = true;
         const p = video.pause();
-        if (p && (typeof Promise !== 'undefined') && (p instanceof Promise)) {
-            p.catch(e => null);
+        if (p && typeof Promise !== "undefined" && p instanceof Promise) {
+            p.catch((e) => null);
         }
     }
 
     function delay() {
         delayBool = true;
         if (!localImage) {
-            setTimeout(function() {
+            setTimeout(function () {
                 delayBool = false;
                 if (options.decodeBarCodeRate) {
                     tryParseBarCode();
@@ -173,88 +187,120 @@ var WebCodeCamJS = function(element) {
     }
 
     function setEventListeners() {
-        video.addEventListener('canplay', function(e) {
-            if (!isStreaming) {
-                if (video.videoWidth > 0) {
-                    h = video.videoHeight / (video.videoWidth / w);
+        video.addEventListener(
+            "canplay",
+            function (e) {
+                if (!isStreaming) {
+                    if (video.videoWidth > 0) {
+                        h = video.videoHeight / (video.videoWidth / w);
+                    }
+                    display.setAttribute("width", w);
+                    display.setAttribute("height", h);
+                    isStreaming = true;
+                    if (options.decodeQRCodeRate || options.decodeBarCodeRate) {
+                        delay();
+                    }
                 }
-                display.setAttribute('width', w);
-                display.setAttribute('height', h);
-                isStreaming = true;
-                if (options.decodeQRCodeRate || options.decodeBarCodeRate) {
-                    delay();
-                }
-            }
-        }, false);
-        video.addEventListener('play', function() {
-            setInterval(function() {
-                if (!video.paused && !video.ended) {
-                    var z = options.zoom;
-                    if (z === 0) {
-                        z = optimalZoom();
+            },
+            false
+        );
+        video.addEventListener(
+            "play",
+            function () {
+                setInterval(function () {
+                    if (!video.paused && !video.ended) {
+                        var z = options.zoom;
+                        if (z === 0) {
+                            z = optimalZoom();
+                        }
+                        con.drawImage(
+                            video,
+                            (w * z - w) / -2,
+                            (h * z - h) / -2,
+                            w * z,
+                            h * z
+                        );
+                        var imageData = con.getImageData(0, 0, w, h);
+                        if (options.grayScale) {
+                            imageData = grayScale(imageData);
+                        }
+                        if (
+                            options.brightness !== 0 ||
+                            options.autoBrightnessValue
+                        ) {
+                            imageData = brightness(
+                                imageData,
+                                options.brightness
+                            );
+                        }
+                        if (options.contrast !== 0) {
+                            imageData = contrast(imageData, options.contrast);
+                        }
+                        if (options.threshold !== 0) {
+                            imageData = threshold(imageData, options.threshold);
+                        }
+                        if (options.sharpness.length !== 0) {
+                            imageData = convolute(imageData, options.sharpness);
+                        }
+                        con.putImageData(imageData, 0, 0);
                     }
-                    con.drawImage(video, (w * z - w) / -2, (h * z - h) / -2, w * z, h * z);
-                    var imageData = con.getImageData(0, 0, w, h);
-                    if (options.grayScale) {
-                        imageData = grayScale(imageData);
-                    }
-                    if (options.brightness !== 0 || options.autoBrightnessValue) {
-                        imageData = brightness(imageData, options.brightness);
-                    }
-                    if (options.contrast !== 0) {
-                        imageData = contrast(imageData, options.contrast);
-                    }
-                    if (options.threshold !== 0) {
-                        imageData = threshold(imageData, options.threshold);
-                    }
-                    if (options.sharpness.length !== 0) {
-                        imageData = convolute(imageData, options.sharpness);
-                    }
-                    con.putImageData(imageData, 0, 0);
-                }
-            }, 1E3 / options.frameRate);
-        }, false);
+                }, 1e3 / options.frameRate);
+            },
+            false
+        );
     }
 
     function setCallBack() {
-        DecodeWorker.onmessage = function(e) {
+        DecodeWorker.onmessage = function (e) {
             if (localImage || (!delayBool && !video.paused)) {
-                if (e.data.success === true && e.data.success != 'localization') {
+                if (
+                    e.data.success === true &&
+                    e.data.success != "localization"
+                ) {
                     sucessLocalDecode = true;
                     delayBool = true;
                     delay();
-                    setTimeout(function() {
-                        if (options.codeRepetition || lastCode != e.data.result[0].Value) {
+                    setTimeout(function () {
+                        if (
+                            options.codeRepetition ||
+                            lastCode != e.data.result[0].Value
+                        ) {
                             beep();
                             lastCode = e.data.result[0].Value;
                             options.resultFunction({
                                 format: e.data.result[0].Format,
                                 code: e.data.result[0].Value,
-                                imgData: lastImageSrc
+                                imgData: lastImageSrc,
                             });
                         }
                     }, 0);
                 }
-                if ((!sucessLocalDecode || !localImage) && e.data.success != 'localization') {
+                if (
+                    (!sucessLocalDecode || !localImage) &&
+                    e.data.success != "localization"
+                ) {
                     if (!localImage) {
-                        setTimeout(tryParseBarCode, 1E3 / options.decodeBarCodeRate);
+                        setTimeout(
+                            tryParseBarCode,
+                            1e3 / options.decodeBarCodeRate
+                        );
                     }
                 }
             }
         };
-        qrcode.callback = function(a) {
+        qrcode.callback = function (a) {
             if (localImage || (!delayBool && !video.paused)) {
                 sucessLocalDecode = true;
                 delayBool = true;
                 delay();
-                setTimeout(function() {
+                setTimeout(function () {
                     if (options.codeRepetition || lastCode != a) {
                         beep();
                         lastCode = a;
                         options.resultFunction({
-                            format: 'QR Code',
+                            format: "QR Code",
                             code: a,
-                            imgData: lastImageSrc
+                            imgData: lastImageSrc,
                         });
                     }
                 }, 0);
@@ -263,7 +309,12 @@ var WebCodeCamJS = function(element) {
     }
 
     function tryParseBarCode() {
-        display.style.transform = 'scale(' + (options.flipHorizontal ? '-1' : '1') + ', ' + (options.flipVertical ? '-1' : '1') + ')';
+        display.style.transform =
+            "scale(" +
+            (options.flipHorizontal ? "-1" : "1") +
+            ", " +
+            (options.flipVertical ? "-1" : "1") +
+            ")";
         if (options.tryVertical && !localImage) {
             flipMode.push(flipMode[0]);
             flipMode.splice(0, 1);
@@ -276,19 +327,32 @@ var WebCodeCamJS = function(element) {
             scanWidth: w,
             scanHeight: h,
             multiple: false,
-            decodeFormats: ["Code128", "Code93", "Code39", "EAN-13", "2Of5", "Inter2Of5", "Codabar"],
-            rotation: flipMode[0]
+            decodeFormats: [
+                "Code128",
+                "Code93",
+                "Code39",
+                "EAN-13",
+                "2Of5",
+                "Inter2Of5",
+                "Codabar",
+            ],
+            rotation: flipMode[0],
         });
     }
 
     function tryParseQRCode() {
-        display.style.transform = 'scale(' + (options.flipHorizontal ? '-1' : '1') + ', ' + (options.flipVertical ? '-1' : '1') + ')';
+        display.style.transform =
+            "scale(" +
+            (options.flipHorizontal ? "-1" : "1") +
+            ", " +
+            (options.flipVertical ? "-1" : "1") +
+            ")";
         try {
             lastImageSrc = display.toDataURL();
             qrcode.decode();
         } catch (e) {
             if (!localImage && !delayBool) {
-                setTimeout(tryParseQRCode, 1E3 / options.decodeQRCodeRate);
+                setTimeout(tryParseQRCode, 1e3 / options.decodeQRCodeRate);
             }
         }
     }
@@ -301,7 +365,10 @@ var WebCodeCamJS = function(element) {
         var pixels = con.getImageData(0, 0, w, h),
             d = pixels.data,
             colorSum = 0,
-            r, g, b, avg;
+            r,
+            g,
+            b,
+            avg;
         for (var x = 0, len = d.length; x < len; x += 4) {
             r = d[x];
             g = d[x + 1];
@@ -313,7 +380,10 @@ var WebCodeCamJS = function(element) {
     }
 
     function brightness(pixels, adjustment) {
-        adjustment = adjustment === 0 && options.autoBrightnessValue ? Number(options.autoBrightnessValue) - getImageLightness() : adjustment;
+        adjustment =
+            adjustment === 0 && options.autoBrightnessValue
+                ? Number(options.autoBrightnessValue) - getImageLightness()
+                : adjustment;
         var d = pixels.data;
         for (var i = 0; i < d.length; i += 4) {
             d[i] += adjustment;
@@ -347,7 +417,8 @@ var WebCodeCamJS = function(element) {
     }
 
     function threshold(pixels, thres) {
-        var average, d = pixels.data;
+        var average,
+            d = pixels.data;
         for (var i = 0, len = w * h * 4; i < len; i += 4) {
             average = d[i] + d[i + 1] + d[i + 2];
             if (average < thres) {
@@ -368,8 +439,8 @@ var WebCodeCamJS = function(element) {
             side = Math.round(Math.sqrt(weights.length)),
             halfSide = Math.floor(side / 2),
             src = pixels.data,
-            tmpCanvas = document.createElement('canvas'),
-            tmpCtx = tmpCanvas.getContext('2d'),
+            tmpCanvas = document.createElement("canvas"),
+            tmpCtx = tmpCanvas.getContext("2d"),
             output = tmpCtx.createImageData(w, h),
             dst = output.data,
             alphaFac = opaque ? 1 : 0;
@@ -407,30 +478,49 @@ var WebCodeCamJS = function(element) {
 
     function buildSelectMenu(selectorVideo, ind) {
         videoSelect = Q(selectorVideo);
-        videoSelect.innerHTML = '';
+        videoSelect.innerHTML = "";
         try {
             if (mediaDevices && mediaDevices.enumerateDevices) {
-                mediaDevices.enumerateDevices().then(function(devices) {
-                    devices.forEach(function(device) {
-                        gotSources(device);
-                    });
-                    if (typeof ind === 'string') {
-                        Array.prototype.find.call(videoSelect.children, function(a, i) {
-                            if (a['innerText' in HTMLElement.prototype ? 'innerText' : 'textContent'].toLowerCase().match(new RegExp(ind, 'g'))) {
-                                videoSelect.selectedIndex = i;
-                            }
+                mediaDevices
+                    .enumerateDevices()
+                    .then(function (devices) {
+                        devices.forEach(function (device) {
+                            gotSources(device);
                         });
-                    } else {
-                        videoSelect.selectedIndex = videoSelect.children.length <= ind ? 0 : ind;
-                    }
-                }).catch(function(error) {
-                    options.getDevicesError(error);
-                });
+                        if (typeof ind === "string") {
+                            Array.prototype.find.call(
+                                videoSelect.children,
+                                function (a, i) {
+                                    if (
+                                        a[
+                                            "innerText" in HTMLElement.prototype
+                                                ? "innerText"
+                                                : "textContent"
+                                        ]
+                                            .toLowerCase()
+                                            .match(new RegExp(ind, "g"))
+                                    ) {
+                                        videoSelect.selectedIndex = i;
+                                    }
+                                }
+                            );
+                        } else {
+                            videoSelect.selectedIndex =
+                                videoSelect.children.length <= ind ? 0 : ind;
+                        }
+                    })
+                    .catch(function (error) {
+                        options.getDevicesError(error);
+                    });
             } else if (mediaDevices && !mediaDevices.enumerateDevices) {
                 html('<option value="true">On</option>', videoSelect);
-                options.getDevicesError(new NotSupportError('enumerateDevices Or getSources is Not supported'));
+                options.getDevicesError(
+                    new NotSupportError(
+                        "enumerateDevices Or getSources is Not supported"
+                    )
+                );
             } else {
-                throw new NotSupportError('getUserMedia is Not supported');
+                throw new NotSupportError("getUserMedia is Not supported");
             }
         } catch (error) {
             options.getDevicesError(error);
@@ -438,10 +528,26 @@ var WebCodeCamJS = function(element) {
     }
 
     function gotSources(device) {
-        if (device.kind === 'video' || device.kind === 'videoinput') {
-            var face = (!device.facing || device.facing === '') ? 'unknown' : device.facing;
-            var text = device.label || 'camera ' + (videoSelect.length + 1) + ' (facing: ' + face + ')';
-            html('<option value="' + (device.id || device.deviceId) + '">' + text + '</option>', videoSelect);
+        if (device.kind === "video" || device.kind === "videoinput") {
+            var face =
+                !device.facing || device.facing === ""
+                    ? "unknown"
+                    : device.facing;
+            var text =
+                device.label ||
+                "camera " +
+                    (videoSelect.length + 1) +
+                    " (facing: " +
+                    face +
+                    ")";
+            html(
+                '<option value="' +
+                    (device.id || device.deviceId) +
+                    '">' +
+                    text +
+                    "</option>",
+                videoSelect
+            );
         }
     }
 
@@ -449,29 +555,42 @@ var WebCodeCamJS = function(element) {
         var constraints = JSON.parse(JSON.stringify(options.constraints));
         if (videoSelect && videoSelect.length !== 0) {
             switch (videoSelect[videoSelect.selectedIndex].value.toString()) {
-                case 'true':
-                    if (navigator.userAgent.search("Edge") == -1 && navigator.userAgent.search("Chrome") != -1) {
-                        constraints.video.optional = [{
-                            sourceId: true
-                        }];
+                case "true":
+                    if (
+                        navigator.userAgent.search("Edge") == -1 &&
+                        navigator.userAgent.search("Chrome") != -1
+                    ) {
+                        constraints.video.optional = [
+                            {
+                                sourceId: true,
+                            },
+                        ];
                     } else {
-                        constraints.video.deviceId = undefined;  
+                        constraints.video.deviceId = undefined;
                     }
                     break;
-                case 'false':
+                case "false":
                     constraints.video = false;
                     break;
                 default:
-                    if (navigator.userAgent.search("Edge") == -1 && navigator.userAgent.search("Chrome") != -1) {
-                        constraints.video.optional = [{
-                            sourceId: videoSelect[videoSelect.selectedIndex].value
-                        }];
+                    if (
+                        navigator.userAgent.search("Edge") == -1 &&
+                        navigator.userAgent.search("Chrome") != -1
+                    ) {
+                        constraints.video.optional = [
+                            {
+                                sourceId:
+                                    videoSelect[videoSelect.selectedIndex]
+                                        .value,
+                            },
+                        ];
                     } else if (navigator.userAgent.search("Firefox") != -1) {
                         constraints.video.deviceId = {
-                            exact: videoSelect[videoSelect.selectedIndex].value
+                            exact: videoSelect[videoSelect.selectedIndex].value,
                         };
                     } else {
-                         constraints.video.deviceId = videoSelect[videoSelect.selectedIndex].value;
+                        constraints.video.deviceId =
+                            videoSelect[videoSelect.selectedIndex].value;
                     }
                     break;
             }
@@ -481,9 +600,13 @@ var WebCodeCamJS = function(element) {
     }
 
     function Q(el) {
-        if (typeof el === 'string') {
+        if (typeof el === "string") {
             var els = document.querySelectorAll(el);
-            return typeof els === 'undefined' ? undefined : els.length > 1 ? els : els[0];
+            return typeof els === "undefined"
+                ? undefined
+                : els.length > 1
+                ? els
+                : els[0];
         }
         return el;
     }
@@ -493,8 +616,8 @@ var WebCodeCamJS = function(element) {
         localImage = true;
         sucessLocalDecode = false;
         var img = new Image();
-        img.onload = function() {
-            con.fillStyle = '#fff';
+        img.onload = function () {
+            con.fillStyle = "#fff";
             con.fillRect(0, 0, w, h);
             con.drawImage(this, 5, 5, w - 10, h - 10);
             tryParseQRCode();
@@ -505,9 +628,14 @@ var WebCodeCamJS = function(element) {
             decodeLocalImage();
         } else {
             if (FileReaderHelper) {
-                new FileReaderHelper().Init('jpg|png|jpeg|gif', 'dataURL', function(e) {
-                    img.src = e.data;
-                }, true);
+                new FileReaderHelper().Init(
+                    "jpg|png|jpeg|gif",
+                    "dataURL",
+                    function (e) {
+                        img.src = e.data;
+                    },
+                    true
+                );
             } else {
                 alert("fileReader class not found!");
             }
@@ -515,24 +643,27 @@ var WebCodeCamJS = function(element) {
     }
 
     function download(filename, url) {
-        var a = window.document.createElement('a'),
-            bd = document.querySelector('body');
+        var a = window.document.createElement("a"),
+            bd = document.querySelector("body");
         bd.appendChild(a);
-        a.setAttribute('href', url);
-        a.setAttribute('download', filename);
+        a.setAttribute("href", url);
+        a.setAttribute("download", filename);
         a.click();
         bd.removeChild(a);
     }
 
     function mergeRecursive(target, source) {
-        if (typeof target !== 'object') {
+        if (typeof target !== "object") {
             target = {};
         }
         for (var property in source) {
             if (source.hasOwnProperty(property)) {
                 var sourceProperty = source[property];
-                if (typeof sourceProperty === 'object') {
-                    target[property] = mergeRecursive(target[property], sourceProperty);
+                if (typeof sourceProperty === "object") {
+                    target[property] = mergeRecursive(
+                        target[property],
+                        sourceProperty
+                    );
                     continue;
                 }
                 target[property] = sourceProperty;
@@ -545,7 +676,7 @@ var WebCodeCamJS = function(element) {
     }
 
     function html(innerhtml, appendTo) {
-        var item = document.createElement('div');
+        var item = document.createElement("div");
         if (innerhtml) {
             item.innerHTML = innerhtml;
         }
@@ -557,21 +688,21 @@ var WebCodeCamJS = function(element) {
     }
 
     function NotSupportError(message) {
-        this.name = 'NotSupportError';
-        this.message = (message || '');
+        this.name = "NotSupportError";
+        this.message = message || "";
     }
     NotSupportError.prototype = Error.prototype;
     return {
-        init: function(opt) {
+        init: function (opt) {
             if (initialized) {
                 return this;
             }
-            if (!display || display.tagName.toLowerCase() !== 'canvas') {
-                console.log('Element type must be canvas!');
-                alert('Element type must be canvas!');
+            if (!display || display.tagName.toLowerCase() !== "canvas") {
+                console.log("Element type must be canvas!");
+                alert("Element type must be canvas!");
                 return false;
             }
-            con = display.getContext('2d');
+            con = display.getContext("2d");
             if (opt) {
                 options = mergeRecursive(options, opt);
                 if (options.beep) {
@@ -589,38 +720,38 @@ var WebCodeCamJS = function(element) {
             }
             return this;
         },
-        play: function() {
+        play: function () {
             localImage = false;
             setTimeout(play, 100);
             return this;
         },
-        stop: function() {
+        stop: function () {
             stop();
             return this;
         },
-        pause: function() {
+        pause: function () {
             pause();
             return this;
         },
-        buildSelectMenu: function(selector, ind) {
+        buildSelectMenu: function (selector, ind) {
             buildSelectMenu(selector, ind ? ind : 0);
             return this;
         },
-        getOptimalZoom: function() {
+        getOptimalZoom: function () {
             return optimalZoom();
         },
-        getLastImageSrc: function() {
+        getLastImageSrc: function () {
             return display.toDataURL();
         },
-        decodeLocalImage: function(url) {
+        decodeLocalImage: function (url) {
             decodeLocalImage(url);
         },
-        isInitialized: function() {
+        isInitialized: function () {
             return initialized;
         },
         getWorker: function () {
             return DecodeWorker;
         },
-        options: options
+        options: options,
     };
 };

@@ -18,6 +18,7 @@ class AttendanceFactory extends Factory
     {
         return [
             'student_id' => $this->faker->numberBetween(1, 10),
+            'date' => date('Y-m-d'),
         ];
     }
 }

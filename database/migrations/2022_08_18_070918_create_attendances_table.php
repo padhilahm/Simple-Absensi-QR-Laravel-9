@@ -18,6 +18,8 @@ return new class extends Migration
             $table->bigInteger('student_id')->unsigned();
             $table->string('student_name')->nullable();
             $table->string('class_name')->nullable();
+            $table->date('date')->nullable();
+            $table->time('time')->nullable();
             $table->timestamps();
         });
     }

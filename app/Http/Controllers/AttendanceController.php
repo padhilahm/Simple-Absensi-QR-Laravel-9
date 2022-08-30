@@ -2,83 +2,80 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Student;
 use App\Models\Attendance;
 use App\Http\Requests\StoreAttendanceRequest;
 use App\Http\Requests\UpdateAttendanceRequest;
 
 class AttendanceController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        //
+        $data = [
+            'title' => 'Absensi',
+        ];
+        return view('index', $data);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
         //
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreAttendanceRequest  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(StoreAttendanceRequest $request)
     {
-        //
+        $studentIdNumber = $request->qr_code;
+
+        $student = Student::where('student_id_number', $studentIdNumber)->first();
+
+        if (!$student) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Siswa tidak ditemukan'
+            ]);
+        }
+
+        // check attendance
+        $attendance = Attendance::where('student_id', $student->id)
+            ->where('date', date('Y-m-d'))
+            ->first();
+        if ($attendance) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Kamu sudah absen hari ini'
+            ]);
+        }
+
+        // insert attendance
+        Attendance::create([
+            'student_id' => $student->id,
+            'student_name' => $student->name,
+            'class_name' => $student->studentClass->name,
+            'date' => date('Y-m-d'),
+            'time' => date('H:i:s')
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => $student->name . ' berhasil absen'
+        ]);
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
     public function show(Attendance $attendance)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
     public function edit(Attendance $attendance)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateAttendanceRequest  $request
-     * @param  \App\Models\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
     public function update(UpdateAttendanceRequest $request, Attendance $attendance)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Attendance  $attendance
-     * @return \Illuminate\Http\Response
-     */
     public function destroy(Attendance $attendance)
     {
         //

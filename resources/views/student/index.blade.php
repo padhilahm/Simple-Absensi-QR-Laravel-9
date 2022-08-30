@@ -148,6 +148,7 @@
                             <th width="3%">No</th>
                             <th>NIS</th>
                             <th>Nama</th>
+                            <th>Kelas</th>
                             <th class="text-end">Aksi</th>
                         </tr>
                     </thead>
@@ -168,6 +169,9 @@
                                     <strong>{{ $student->student_id_number }}</strong>
                                 </td>
                                 <td>{{ $student->name }}</td>
+                                <td>
+                                    {{ $student->studentClass->name }}
+                                </td>
 
                                 <td class="text-end">
                                     <a class="btn-sm btn-warning" href="javascript:void(0);"

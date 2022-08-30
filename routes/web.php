@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttendanceController;
 use App\Models\Student;
 use App\Models\StudentClass;
 use Illuminate\Support\Facades\Route;
@@ -20,9 +21,8 @@ use App\Http\Controllers\StudentClassController;
 |
 */
 
-Route::get('/', function () {
-    return view('index');
-});
+Route::get('/', [AttendanceController::class, 'index'])->name('attendance.index');
+Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
 
 Route::get('/login', [AuthController::class, 'index'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('loginProses');
@@ -31,6 +31,7 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 // route group for authentication
 Route::group(['middleware' => 'auth'], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/attendance/{id}/{date}', [DashboardController::class, 'attendance'])->name('attendance');
 
     Route::resource('/student', StudentController::class);
     Route::get('/student-search', [StudentController::class, 'search'])->name('student.search');

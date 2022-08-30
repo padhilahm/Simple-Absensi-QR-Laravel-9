@@ -63,22 +63,21 @@
                             </a>
                         </div>
                         <!-- /Logo -->
-                        <h4 class="mb-2">Forgot Password? 🔒</h4>
-                        <p class="mb-4">Enter your email and we'll send you instructions to reset your password</p>
+                        <h4 class="mb-2 text-center">Absensi {{ date('d M Y') }}</h4>
+                        <p class="mb-4">Tunjukkan QR Code kartu absen anda</p>
                         <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="text" class="form-control" id="email" name="email"
-                                    placeholder="Enter your email" autofocus />
+                                <canvas class="form-control"></canvas>
+                                <select class="form-control"></select>
                             </div>
-                            <button class="btn btn-primary d-grid w-100">Send Reset Link</button>
+                            {{-- <button class="btn btn-primary d-grid w-100">Send Reset Link</button> --}}
                         </form>
-                        <div class="text-center">
+                        {{-- <div class="text-center">
                             <a href="auth-login-basic.html" class="d-flex align-items-center justify-content-center">
                                 <i class="bx bx-chevron-left scaleX-n1-rtl bx-sm"></i>
                                 Back to login
                             </a>
-                        </div>
+                        </div> --}}
                     </div>
                 </div>
                 <!-- /Forgot Password -->
@@ -87,4 +86,62 @@
     </div>
 
     <!-- / Content -->
+@endsection
+
+@section('script')
+    <script type="text/javascript">
+        //menampilkan hasil dari scan qr code
+        var arg = {
+            resultFunction: function(result) {
+                if (result.code == '') {
+                    swal("Gagal", "QR Code tidak ditemukan", "error");
+                }
+
+                // hide canvas
+                $('canvas').hide();
+
+                // ajax
+                $.ajax({
+                    url: "/attendance",
+                    type: "POST",
+                    data: {
+                        "_token": "{{ csrf_token() }}",
+                        "qr_code": result.code
+                    },
+                    success: function(response) {
+                        if (response.status == 'success') {
+                            swal({
+                                icon: 'success',
+                                title: 'Berhasil',
+                                text: response.message,
+                                timer: 3000,
+                            })
+                        } else {
+                            swal({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: response.message,
+                                timer: 3000,
+                            })
+                        }
+
+                        setTimeout(function() {
+                            // show canvas
+                            $('canvas').show();
+                        }, 3000);
+                    }
+                });
+            }
+        };
+
+        // proses scanning qr code dari kamera
+        var decoder = $("canvas").WebCodeCamJQuery(arg).data().plugin_WebCodeCamJQuery;
+
+        // menampilkan dan memilih kamera yang tersedia
+        decoder.buildSelectMenu("select");
+        decoder.play();
+        $('select').on('change', function() {
+            decoder.stop().play();
+        });
+    </script>
 @endsection

@@ -27,7 +27,7 @@
       content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
     />
 
-    <title>Login Basic - Pages | Sneat - Bootstrap 5 HTML Admin Template - Pro</title>
+    <title>{{ isset($title) ? $title : 'Login' }}</title>
 
     <meta name="description" content="" />
 
@@ -92,9 +92,16 @@
     <!-- Main JS -->
     <script src="/assets/js/main.js"></script>
 
+    <script src="/assets/js/sweetalert.min.js"></script>
+
     <!-- Page JS -->
 
     <!-- Place this tag in your head or just before your close body tag. -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    <script type="text/javascript" src="/assets/qr/js/qrcodelib.js"></script>
+    <script type="text/javascript" src="/assets/qr/js/webcodecamjquery.js"></script>
+
+    @yield('script')
   </body>
 </html>

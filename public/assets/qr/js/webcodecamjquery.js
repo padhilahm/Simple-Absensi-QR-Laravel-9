@@ -5,27 +5,44 @@
  * email: atandrastoth@gmail.com
  * Licensed under the MIT license
  */
-(function($, window, document, undefined) {
-    'use strict';
-    var pluginName = 'WebCodeCamJQuery';
+(function ($, window, document, undefined) {
+    "use strict";
+    var pluginName = "WebCodeCamJQuery";
     var mediaDevices = window.navigator.mediaDevices;
-    mediaDevices.getUserMedia = function(c) {
-        return new Promise(function(y, n) {
-            (window.navigator.getUserMedia || window.navigator.mozGetUserMedia || window.navigator.webkitGetUserMedia).call(navigator, c, y, n);
+    mediaDevices.getUserMedia = function (c) {
+        return new Promise(function (y, n) {
+            (
+                window.navigator.getUserMedia ||
+                window.navigator.mozGetUserMedia ||
+                window.navigator.webkitGetUserMedia
+            ).call(navigator, c, y, n);
         });
-    }
-    HTMLVideoElement.prototype.streamSrc = ('srcObject' in HTMLVideoElement.prototype) ? function(stream) {
-        this.srcObject = !!stream ? stream : null;
-    } : function(stream) {
-        if (!!stream) {
-            this.src = (window.URL || window.webkitURL).createObjectURL(stream);
-        } else {
-            this.removeAttribute('src');
-        }
     };
-    var Self, display, videoSelect, lastImageSrc, con, beepSound, w, h, lastCode,
+    HTMLVideoElement.prototype.streamSrc =
+        "srcObject" in HTMLVideoElement.prototype
+            ? function (stream) {
+                  this.srcObject = !!stream ? stream : null;
+              }
+            : function (stream) {
+                  if (!!stream) {
+                      this.src = (
+                          window.URL || window.webkitURL
+                      ).createObjectURL(stream);
+                  } else {
+                      this.removeAttribute("src");
+                  }
+              };
+    var Self,
+        display,
+        videoSelect,
+        lastImageSrc,
+        con,
+        beepSound,
+        w,
+        h,
+        lastCode,
         DecodeWorker = null,
-        video = $('<video muted autoplay playsinline></video>')[0],
+        video = $("<video muted autoplay playsinline></video>")[0],
         sucessLocalDecode = false,
         localImage = false,
         flipMode = [1, 3, 6, 8],
@@ -46,43 +63,45 @@
                 video: {
                     mandatory: {
                         maxWidth: 1280,
-                        maxHeight: 720
+                        maxHeight: 720,
                     },
-                    optional: [{
-                        sourceId: true
-                    }]
+                    optional: [
+                        {
+                            sourceId: true,
+                        },
+                    ],
                 },
-                audio: false
+                audio: false,
             },
             flipVertical: false,
             flipHorizontal: false,
             zoom: 0,
-            beep: 'audio/beep.mp3',
-            decoderWorker: 'js/DecoderWorker.js',
+            beep: "/assets/qr/audio/beep.mp3",
+            decoderWorker: "js/DecoderWorker.js",
             brightness: 0,
             autoBrightnessValue: 0,
             grayScale: 0,
             contrast: 0,
             threshold: 0,
             sharpness: [],
-            resultFunction: function(res) {
+            resultFunction: function (res) {
                 console.log(res.format + ": " + res.code);
             },
-            cameraSuccess: function(stream) {
-                console.log('cameraSuccess');
+            cameraSuccess: function (stream) {
+                console.log("cameraSuccess");
             },
-            canPlayFunction: function() {
-                console.log('canPlayFunction');
+            canPlayFunction: function () {
+                console.log("canPlayFunction");
             },
-            getDevicesError: function(error) {
+            getDevicesError: function (error) {
                 console.log(error);
             },
-            getUserMediaError: function(error) {
+            getUserMediaError: function (error) {
                 console.log(error);
             },
-            cameraError: function(error) {
+            cameraError: function (error) {
                 console.log(error);
-            }
+            },
         };
 
     function Plugin(element, options) {
@@ -98,10 +117,13 @@
     function init() {
         var constraints = changeConstraints();
         try {
-            mediaDevices.getUserMedia(constraints).then(cameraSuccess).catch(function(error) {
-                Self.options.cameraError(error);
-                return false;
-            });
+            mediaDevices
+                .getUserMedia(constraints)
+                .then(cameraSuccess)
+                .catch(function (error) {
+                    Self.options.cameraError(error);
+                    return false;
+                });
         } catch (error) {
             Self.options.getUserMediaError(error);
             return false;
@@ -115,8 +137,8 @@
                 init();
             }
             const p = video.play();
-            if (p && (typeof Promise !== 'undefined') && (p instanceof Promise)) {
-                p.catch(e => null);
+            if (p && typeof Promise !== "undefined" && p instanceof Promise) {
+                p.catch((e) => null);
             }
             delay();
         }
@@ -125,8 +147,8 @@
     function stop() {
         delayBool = true;
         const p = video.pause();
-        if (p && (typeof Promise !== 'undefined') && (p instanceof Promise)) {
-            p.catch(e => null);
+        if (p && typeof Promise !== "undefined" && p instanceof Promise) {
+            p.catch((e) => null);
         }
         video.streamSrc(null);
         con.clearRect(0, 0, w, h);
@@ -141,15 +163,15 @@
     function pause() {
         delayBool = true;
         const p = video.pause();
-        if (p && (typeof Promise !== 'undefined') && (p instanceof Promise)) {
-            p.catch(e => null);
+        if (p && typeof Promise !== "undefined" && p instanceof Promise) {
+            p.catch((e) => null);
         }
     }
 
     function delay() {
         delayBool = true;
         if (!localImage) {
-            setTimeout(function() {
+            setTimeout(function () {
                 delayBool = false;
                 if (Self.options.decodeBarCodeRate) {
                     tryParseBarCode();
@@ -178,88 +200,121 @@
     }
 
     function setEventListeners() {
-        $(video).on('canplay', function(e) {
+        $(video).on("canplay", function (e) {
             if (!isStreaming) {
                 if (video.videoWidth > 0) {
                     h = video.videoHeight / (video.videoWidth / w);
                 }
-                $(display).attr('width', w);
-                $(display).attr('height', h);
+                $(display).attr("width", w);
+                $(display).attr("height", h);
                 isStreaming = true;
-                if (Self.options.decodeQRCodeRate || Self.options.decodeBarCodeRate) {
+                if (
+                    Self.options.decodeQRCodeRate ||
+                    Self.options.decodeBarCodeRate
+                ) {
                     delay();
                 }
             }
         });
-        $(video).on('play', function() {
-            setInterval(function() {
+        $(video).on("play", function () {
+            setInterval(function () {
                 if (!video.paused && !video.ended) {
                     var z = Self.options.zoom;
                     if (z === 0) {
                         z = optimalZoom();
                     }
-                    con.drawImage(video, (w * z - w) / -2, (h * z - h) / -2, w * z, h * z);
+                    con.drawImage(
+                        video,
+                        (w * z - w) / -2,
+                        (h * z - h) / -2,
+                        w * z,
+                        h * z
+                    );
                     var imageData = con.getImageData(0, 0, w, h);
                     if (Self.options.grayScale) {
                         imageData = grayScale(imageData);
                     }
-                    if (Self.options.brightness !== 0 || Self.options.autoBrightnessValue) {
-                        imageData = brightness(imageData, Self.options.brightness);
+                    if (
+                        Self.options.brightness !== 0 ||
+                        Self.options.autoBrightnessValue
+                    ) {
+                        imageData = brightness(
+                            imageData,
+                            Self.options.brightness
+                        );
                     }
                     if (Self.options.contrast !== 0) {
                         imageData = contrast(imageData, Self.options.contrast);
                     }
                     if (Self.options.threshold !== 0) {
-                        imageData = threshold(imageData, Self.options.threshold);
+                        imageData = threshold(
+                            imageData,
+                            Self.options.threshold
+                        );
                     }
                     if (Self.options.sharpness.length !== 0) {
-                        imageData = convolute(imageData, Self.options.sharpness);
+                        imageData = convolute(
+                            imageData,
+                            Self.options.sharpness
+                        );
                     }
                     con.putImageData(imageData, 0, 0);
                 }
-            }, 1E3 / Self.options.frameRate);
+            }, 1e3 / Self.options.frameRate);
         });
     }
 
     function setCallBack() {
-        DecodeWorker.onmessage = function(e) {
+        DecodeWorker.onmessage = function (e) {
             if (localImage || (!delayBool && !video.paused)) {
-                if (e.data.success === true && e.data.success != 'localization') {
+                if (
+                    e.data.success === true &&
+                    e.data.success != "localization"
+                ) {
                     sucessLocalDecode = true;
                     delayBool = true;
                     delay();
-                    setTimeout(function() {
-                        if (Self.options.codeRepetition || lastCode != e.data.result[0].Value) {
+                    setTimeout(function () {
+                        if (
+                            Self.options.codeRepetition ||
+                            lastCode != e.data.result[0].Value
+                        ) {
                             beep();
                             lastCode = e.data.result[0].Value;
                             Self.options.resultFunction({
                                 format: e.data.result[0].Format,
                                 code: e.data.result[0].Value,
-                                imgData: lastImageSrc
+                                imgData: lastImageSrc,
                             });
                         }
                     }, 0);
                 }
-                if ((!sucessLocalDecode || !localImage) && e.data.success != 'localization') {
+                if (
+                    (!sucessLocalDecode || !localImage) &&
+                    e.data.success != "localization"
+                ) {
                     if (!localImage) {
-                        setTimeout(tryParseBarCode, 1E3 / Self.options.decodeBarCodeRate);
+                        setTimeout(
+                            tryParseBarCode,
+                            1e3 / Self.options.decodeBarCodeRate
+                        );
                     }
                 }
             }
         };
-        qrcode.callback = function(a) {
+        qrcode.callback = function (a) {
             if (localImage || (!delayBool && !video.paused)) {
                 sucessLocalDecode = true;
                 delayBool = true;
                 delay();
-                setTimeout(function() {
+                setTimeout(function () {
                     if (Self.options.codeRepetition || lastCode != a) {
                         beep();
                         lastCode = a;
                         Self.options.resultFunction({
-                            format: 'QR Code',
+                            format: "QR Code",
                             code: a,
-                            imgData: lastImageSrc
+                            imgData: lastImageSrc,
                         });
                     }
                 }, 0);
@@ -269,7 +324,12 @@
 
     function tryParseBarCode() {
         $(display).css({
-            'transform': 'scale(' + (Self.options.flipHorizontal ? '-1' : '1') + ', ' + (Self.options.flipVertical ? '-1' : '1') + ')'
+            transform:
+                "scale(" +
+                (Self.options.flipHorizontal ? "-1" : "1") +
+                ", " +
+                (Self.options.flipVertical ? "-1" : "1") +
+                ")",
         });
         if (Self.options.tryVertical && !localImage) {
             flipMode.push(flipMode[0]);
@@ -283,21 +343,34 @@
             scanWidth: w,
             scanHeight: h,
             multiple: false,
-            decodeFormats: ["Code128", "Code93", "Code39", "EAN-13", "2Of5", "Inter2Of5", "Codabar"],
-            rotation: flipMode[0]
+            decodeFormats: [
+                "Code128",
+                "Code93",
+                "Code39",
+                "EAN-13",
+                "2Of5",
+                "Inter2Of5",
+                "Codabar",
+            ],
+            rotation: flipMode[0],
         });
     }
 
     function tryParseQRCode() {
         $(display).css({
-            'transform': 'scale(' + (Self.options.flipHorizontal ? '-1' : '1') + ', ' + (Self.options.flipVertical ? '-1' : '1') + ')'
+            transform:
+                "scale(" +
+                (Self.options.flipHorizontal ? "-1" : "1") +
+                ", " +
+                (Self.options.flipVertical ? "-1" : "1") +
+                ")",
         });
         try {
             lastImageSrc = display.toDataURL();
             qrcode.decode();
         } catch (e) {
             if (!localImage && !delayBool) {
-                setTimeout(tryParseQRCode, 1E3 / Self.options.decodeQRCodeRate);
+                setTimeout(tryParseQRCode, 1e3 / Self.options.decodeQRCodeRate);
             }
         }
     }
@@ -310,7 +383,10 @@
         var pixels = con.getImageData(0, 0, w, h),
             d = pixels.data,
             colorSum = 0,
-            r, g, b, avg;
+            r,
+            g,
+            b,
+            avg;
         for (var x = 0, len = d.length; x < len; x += 4) {
             r = d[x];
             g = d[x + 1];
@@ -322,7 +398,10 @@
     }
 
     function brightness(pixels, adjustment) {
-        adjustment = adjustment === 0 && Self.options.autoBrightnessValue ? Self.options.autoBrightnessValue - getImageLightness() : adjustment;
+        adjustment =
+            adjustment === 0 && Self.options.autoBrightnessValue
+                ? Self.options.autoBrightnessValue - getImageLightness()
+                : adjustment;
         var d = pixels.data;
         for (var i = 0; i < d.length; i += 4) {
             d[i] += adjustment;
@@ -356,7 +435,8 @@
     }
 
     function threshold(pixels, thres) {
-        var average, d = pixels.data;
+        var average,
+            d = pixels.data;
         for (var i = 0, len = w * h * 4; i < len; i += 4) {
             average = d[i] + d[i + 1] + d[i + 2];
             if (average < thres) {
@@ -377,8 +457,8 @@
             side = Math.round(Math.sqrt(weights.length)),
             halfSide = Math.floor(side / 2),
             src = pixels.data,
-            tmpCanvas = document.createElement('canvas'),
-            tmpCtx = tmpCanvas.getContext('2d'),
+            tmpCanvas = document.createElement("canvas"),
+            tmpCtx = tmpCanvas.getContext("2d"),
             output = tmpCtx.createImageData(w, h),
             dst = output.data,
             alphaFac = opaque ? 1 : 0;
@@ -416,30 +496,48 @@
 
     function buildSelectMenu(selectorVideo, ind) {
         videoSelect = $(selectorVideo);
-        videoSelect.html('');
+        videoSelect.html("");
         try {
             if (mediaDevices && mediaDevices.enumerateDevices) {
-                mediaDevices.enumerateDevices().then(function(devices) {
-                    devices.forEach(function(device) {
-                        gotSources(device);
-                    });
-                    if (typeof ind === 'string') {
-                        Array.prototype.find.call(videoSelect.get(0).children, function(a, i) {
-                            if ($(a).text().toLowerCase().match(new RegExp(ind, 'g'))) {
-                                videoSelect.prop('selectedIndex', i);
-                            }
+                mediaDevices
+                    .enumerateDevices()
+                    .then(function (devices) {
+                        devices.forEach(function (device) {
+                            gotSources(device);
                         });
-                    } else {
-                        videoSelect.prop('selectedIndex', videoSelect.children().length <= ind ? 0 : ind);
-                    }
-                }).catch(function(error) {
-                    Self.options.getDevicesError(error);
-                });
+                        if (typeof ind === "string") {
+                            Array.prototype.find.call(
+                                videoSelect.get(0).children,
+                                function (a, i) {
+                                    if (
+                                        $(a)
+                                            .text()
+                                            .toLowerCase()
+                                            .match(new RegExp(ind, "g"))
+                                    ) {
+                                        videoSelect.prop("selectedIndex", i);
+                                    }
+                                }
+                            );
+                        } else {
+                            videoSelect.prop(
+                                "selectedIndex",
+                                videoSelect.children().length <= ind ? 0 : ind
+                            );
+                        }
+                    })
+                    .catch(function (error) {
+                        Self.options.getDevicesError(error);
+                    });
             } else if (mediaDevices && !mediaDevices.enumerateDevices) {
                 $('<option value="true">On</option>').appendTo(videoSelect);
-                Self.options.getDevicesError(new NotSupportError('enumerateDevices Or getSources is Not supported'));
+                Self.options.getDevicesError(
+                    new NotSupportError(
+                        "enumerateDevices Or getSources is Not supported"
+                    )
+                );
             } else {
-                throw new NotSupportError('getUserMedia is Not supported');
+                throw new NotSupportError("getUserMedia is Not supported");
             }
         } catch (error) {
             Self.options.getDevicesError(error);
@@ -447,10 +545,24 @@
     }
 
     function gotSources(device) {
-        if (device.kind === 'video' || device.kind === 'videoinput') {
-            var face = (!device.facing || device.facing === '') ? 'unknown' : device.facing;
-            var text = device.label || 'Camera '.concat(videoSelect.children().length + 1, ' (facing: ' + face + ')');
-            $('<option value="' + (device.id || device.deviceId) + '">' + text + '</option>').appendTo(videoSelect);
+        if (device.kind === "video" || device.kind === "videoinput") {
+            var face =
+                !device.facing || device.facing === ""
+                    ? "unknown"
+                    : device.facing;
+            var text =
+                device.label ||
+                "Camera ".concat(
+                    videoSelect.children().length + 1,
+                    " (facing: " + face + ")"
+                );
+            $(
+                '<option value="' +
+                    (device.id || device.deviceId) +
+                    '">' +
+                    text +
+                    "</option>"
+            ).appendTo(videoSelect);
         }
     }
 
@@ -458,29 +570,39 @@
         var constraints = $.parseJSON(JSON.stringify(Self.options.constraints));
         if (videoSelect && videoSelect.children().length !== 0) {
             switch (videoSelect.val().toString()) {
-                case 'true':
-                    if (navigator.userAgent.search("Edge") == -1 && navigator.userAgent.search("Chrome") != -1) {
-                        constraints.video.optional = [{
-                            sourceId: true
-                        }];
+                case "true":
+                    if (
+                        navigator.userAgent.search("Edge") == -1 &&
+                        navigator.userAgent.search("Chrome") != -1
+                    ) {
+                        constraints.video.optional = [
+                            {
+                                sourceId: true,
+                            },
+                        ];
                     } else {
-                        constraints.video.deviceId = undefined;  
+                        constraints.video.deviceId = undefined;
                     }
                     break;
-                case 'false':
+                case "false":
                     constraints.video = false;
                     break;
                 default:
-                    if (navigator.userAgent.search("Edge") == -1 && navigator.userAgent.search("Chrome") != -1) {
-                        constraints.video.optional = [{
-                            sourceId: videoSelect.val()
-                        }];
+                    if (
+                        navigator.userAgent.search("Edge") == -1 &&
+                        navigator.userAgent.search("Chrome") != -1
+                    ) {
+                        constraints.video.optional = [
+                            {
+                                sourceId: videoSelect.val(),
+                            },
+                        ];
                     } else if (navigator.userAgent.search("Firefox") != -1) {
                         constraints.video.deviceId = {
-                            exact: videoSelect.val()
+                            exact: videoSelect.val(),
                         };
                     } else {
-                         constraints.video.deviceId = videoSelect.val();
+                        constraints.video.deviceId = videoSelect.val();
                     }
                     break;
             }
@@ -494,8 +616,8 @@
         localImage = true;
         sucessLocalDecode = false;
         var img = new Image();
-        img.onload = function() {
-            con.fillStyle = '#fff';
+        img.onload = function () {
+            con.fillStyle = "#fff";
             con.fillRect(0, 0, w, h);
             con.drawImage(this, 5, 5, w - 10, h - 10);
             tryParseQRCode();
@@ -506,9 +628,14 @@
             decodeLocalImage();
         } else {
             if (FileReaderHelper) {
-                new FileReaderHelper().Init('jpg|png|jpeg|gif', 'dataURL', function(e) {
-                    img.src = e.data;
-                }, true);
+                new FileReaderHelper().Init(
+                    "jpg|png|jpeg|gif",
+                    "dataURL",
+                    function (e) {
+                        img.src = e.data;
+                    },
+                    true
+                );
             } else {
                 alert("fileReader class not found!");
             }
@@ -516,29 +643,29 @@
     }
 
     function download(filename, url) {
-        var a = $('<a>');
-        a.attr('href', url);
-        a.attr('download', filename);
-        a.css('display', 'none');
-        a.appendTo('body');
+        var a = $("<a>");
+        a.attr("href", url);
+        a.attr("download", filename);
+        a.css("display", "none");
+        a.appendTo("body");
         a.click();
         a.remove();
     }
 
     function NotSupportError(message) {
-        this.name = 'NotSupportError';
-        this.message = (message || '');
+        this.name = "NotSupportError";
+        this.message = message || "";
     }
     NotSupportError.prototype = Error.prototype;
     $.extend(Plugin.prototype, {
-        init: function() {
+        init: function () {
             if (!initialized) {
-                if (!display || display.tagName.toLowerCase() !== 'canvas') {
-                    console.log('Element type must be canvas!');
-                    alert('Element type must be canvas!');
+                if (!display || display.tagName.toLowerCase() !== "canvas") {
+                    console.log("Element type must be canvas!");
+                    alert("Element type must be canvas!");
                     return false;
                 }
-                con = display.getContext('2d');
+                con = display.getContext("2d");
                 display.width = w = Self.options.width;
                 display.height = h = Self.options.height;
                 qrcode.sourceCanvas = display;
@@ -548,47 +675,50 @@
                 if (this.options.beep) {
                     beepSound = new Audio(this.options.beep);
                 }
-                if (this.options.decodeQRCodeRate || this.options.decodeBarCodeRate) {
+                if (
+                    this.options.decodeQRCodeRate ||
+                    this.options.decodeBarCodeRate
+                ) {
                     setCallBack();
                 }
             }
             return this;
         },
-        play: function() {
+        play: function () {
             this.init();
             localImage = false;
             setTimeout(play, 100);
             return this;
         },
-        stop: function() {
+        stop: function () {
             stop();
             return this;
         },
-        pause: function() {
+        pause: function () {
             pause();
             return this;
         },
-        buildSelectMenu: function(selector, ind) {
+        buildSelectMenu: function (selector, ind) {
             buildSelectMenu(selector, ind ? ind : 0);
             return this;
         },
-        getOptimalZoom: function() {
+        getOptimalZoom: function () {
             return optimalZoom();
         },
-        getLastImageSrc: function() {
+        getLastImageSrc: function () {
             return display.toDataURL();
         },
-        decodeLocalImage: function(url) {
+        decodeLocalImage: function (url) {
             decodeLocalImage(url);
         },
-        isInitialized: function() {
+        isInitialized: function () {
             return initialized;
-        }
+        },
     });
-    $.fn[pluginName] = function(options) {
-        return this.each(function() {
-            if (!$.data(this, 'plugin_' + pluginName)) {
-                $.data(this, 'plugin_' + pluginName, new Plugin(this, options));
+    $.fn[pluginName] = function (options) {
+        return this.each(function () {
+            if (!$.data(this, "plugin_" + pluginName)) {
+                $.data(this, "plugin_" + pluginName, new Plugin(this, options));
             }
         });
     };

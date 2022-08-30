@@ -18,11 +18,14 @@ class StudentController extends Controller
 
         $search = request()->query('search');
         if ($search) {
-            $students = Student::where('name', 'like', "%$search%")
+            $students = Student::with('studentClass')
+                ->where('name', 'like', "%$search%")
                 ->orWhere('student_id_number', 'like', "%$search%")
                 ->paginate($paginate);
         } else {
-            $students = Student::latest()->paginate($paginate);
+            $students = Student::with('studentClass')
+                ->latest()
+                ->paginate($paginate);
         }
 
         if (request('page')) {
