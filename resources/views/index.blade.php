@@ -59,25 +59,25 @@
                                         </g>
                                     </svg>
                                 </span>
-                                <span class="app-brand-text demo text-body fw-bolder">Sneat</span>
+                                <span class="app-brand-text demo text-body fw-bolder">Waktu <span
+                                        id='time'></span></span>
                             </a>
                         </div>
                         <!-- /Logo -->
-                        <h4 class="mb-2 text-center">Absensi {{ date('d M Y') }}</h4>
-                        <p class="mb-4">Tunjukkan QR Code kartu absen anda</p>
+                        <h4 class="mb-2 text-center">{{ date('d M Y') }}</h4>
+                        <h5 class="mb-2 text-center">Waktu Absen
+                            {{ $startTime }} -
+                            {{ $endTime }}</h5>
+                        <p class="mb-4 text-center">Tunjukkan QR Code kartu absen anda</p>
                         <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
+
                             <div class="mb-3">
                                 <canvas class="form-control"></canvas>
                                 <select class="form-control"></select>
                             </div>
+
                             {{-- <button class="btn btn-primary d-grid w-100">Send Reset Link</button> --}}
                         </form>
-                        {{-- <div class="text-center">
-                            <a href="auth-login-basic.html" class="d-flex align-items-center justify-content-center">
-                                <i class="bx bx-chevron-left scaleX-n1-rtl bx-sm"></i>
-                                Back to login
-                            </a>
-                        </div> --}}
                     </div>
                 </div>
                 <!-- /Forgot Password -->
@@ -143,5 +143,39 @@
         $('select').on('change', function() {
             decoder.stop().play();
         });
+    </script>
+
+    <script>
+        // menampilkan waktu
+        let time = $('#time').text();
+        let start_time = "{{ $startTime }}";
+        let end_time = "{{ $endTime }}";
+
+        setInterval(function() {
+            let date = new Date();
+            let hours = date.getHours();
+            let minutes = date.getMinutes();
+            let seconds = date.getSeconds();
+            if (seconds < 10) {
+                seconds = '0' + seconds;
+            }
+            if (minutes < 10) {
+                minutes = '0' + minutes;
+            }
+            if (hours < 10) {
+                hours = '0' + hours;
+            }
+            let time = hours + ":" + minutes + ":" + seconds;
+            $('#time').text(time);
+
+            if (start_time > time || end_time < time) {
+                $('canvas').hide();
+                $('#formAuthentication').hide();
+            } else {
+                $('canvas').show();
+                $('#formAuthentication').show();
+            }
+
+        }, 1000);
     </script>
 @endsection

@@ -12,8 +12,20 @@ class AttendanceController extends Controller
 {
     public function index()
     {
+        $setting = Setting::first();
+        $startTime = date('H:i', strtotime($setting->attendance_start_time));
+        $endTime = date('H:i', strtotime($setting->attendance_end_time));
+        if ($startTime > date('H:i') || $endTime < date('H:i')) {
+            $status = 0;
+        } else {
+            $status = 1;
+        }
+
         $data = [
             'title' => 'Absensi',
+            'startTime' => $startTime,
+            'endTime' => $endTime,
+            'status' => $status,
         ];
         return view('index', $data);
     }
