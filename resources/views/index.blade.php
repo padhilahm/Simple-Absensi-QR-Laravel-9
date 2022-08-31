@@ -66,8 +66,8 @@
                         <!-- /Logo -->
                         <h4 class="mb-2 text-center">{{ date('d M Y') }}</h4>
                         <h5 class="mb-2 text-center">Waktu Absen
-                            {{ $startTime }} -
-                            {{ $endTime }}</h5>
+                            {{ $start_time }} -
+                            {{ $end_time }}</h5>
                         <p class="mb-4 text-center">Tunjukkan QR Code kartu absen anda</p>
                         <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
 
@@ -148,8 +148,8 @@
     <script>
         // menampilkan waktu
         let time = $('#time').text();
-        let start_time = "{{ $startTime }}";
-        let end_time = "{{ $endTime }}";
+        let start_time = "{{ $start_time }}";
+        let end_time = "{{ $end_time }}";
 
         setInterval(function() {
             let date = new Date();

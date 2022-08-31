@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\StudentClass;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreStudentClassRequest;
 use App\Http\Requests\UpdateStudentClassRequest;
@@ -73,26 +74,30 @@ class StudentClassController extends Controller
             return response()->json([
                 'code' => 400,
                 'errors' => $validate->errors(),
-                'message' => 'Kelas gagal diubah'
+                'message' => 'Kelas gagal diedit'
             ]);
         }
 
-        // update the student
-        $studentClass->update($request->all());
-        $studentClass->save();
+        DB::beginTransaction();
+        try {
+            // update the student
+            $studentClass->update($request->all());
+            $studentClass->save();
 
-        if ($studentClass) {
+            DB::commit();
             return response()->json([
                 'code' => 200,
-                'message' => 'Kelas berhasil diubah',
-                'class' => $studentClass
+                'message' => 'Kelas berhasil diedit'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json([
+                'code' => 500,
+                'message' => 'Kelas gagal diedit'
             ]);
         }
-        return response()->json([
-            'code' => 500,
-            'message' => 'Kelas gagal diubah'
-        ]);
     }
+
     public function destroy(StudentClass $studentClass)
     {
         if ($studentClass->delete()) {

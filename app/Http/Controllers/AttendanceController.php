@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Setting;
 use App\Models\Student;
 use App\Models\Attendance;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreAttendanceRequest;
 use App\Http\Requests\UpdateAttendanceRequest;
-use App\Models\Setting;
 
 class AttendanceController extends Controller
 {
@@ -23,8 +24,8 @@ class AttendanceController extends Controller
 
         $data = [
             'title' => 'Absensi',
-            'startTime' => $startTime,
-            'endTime' => $endTime,
+            'start_time' => $startTime,
+            'end_time' => $endTime,
             'status' => $status,
         ];
         return view('index', $data);
@@ -67,19 +68,29 @@ class AttendanceController extends Controller
             ]);
         }
 
-        // insert attendance
-        Attendance::create([
-            'student_id' => $student->id,
-            'student_name' => $student->name,
-            'class_name' => $student->studentClass->name,
-            'date' => date('Y-m-d'),
-            'time' => date('H:i:s')
-        ]);
+        DB::beginTransaction();
+        try {
+            // insert attendance
+            Attendance::create([
+                'student_id' => $student->id,
+                'student_name' => $student->name,
+                'class_name' => $student->studentClass->name,
+                'date' => date('Y-m-d'),
+                'time' => date('H:i:s')
+            ]);
 
-        return response()->json([
-            'status' => 'success',
-            'message' => $student->name . ' berhasil absen'
-        ]);
+            DB::commit();
+            return response()->json([
+                'status' => 'success',
+                'message' => $student->name . ' berhasil absen hari ini'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan'
+            ]);
+        }
     }
 
     public function show(Attendance $attendance)

@@ -86,13 +86,14 @@
                                         <td>{{ $student->name }}</td>
                                         <td>{{ $student->studentClass->name }}</td>
                                         <td class="text-end">
-                                            @if ($student->attendances->where('date', $date)->count() > 0)
+                                            @if ($student->attendance_status == 'Hadir')
                                                 <button type="button" class="btn btn-success btn-sm" id="btn-attendance"
                                                     data-id="{{ $student->id }}"
-                                                    data-date="{{ $date }}">Hadir</button>
+                                                    data-date="{{ $date }}">{{ $student->attendance_status }}</button>
                                             @else
                                                 <button type="button" class="btn btn-danger btn-sm" id="btn-attendance"
-                                                    data-id="{{ $student->id }}" data-date="{{ $date }}">Tidak
+                                                    data-id="{{ $student->id }}"
+                                                    data-date="{{ $date }}">{{ $student->attendance_status }}
                                                 </button>
                                             @endif
                                         </td>

@@ -6,6 +6,7 @@ use App\Models\Setting;
 use App\Http\Requests\StoreSettingRequest;
 use App\Http\Requests\UpdateSettingRequest;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
 {
@@ -35,10 +36,18 @@ class SettingController extends Controller
         $request->validate($validate);
 
         $id = $request->id;
-        $setting = Setting::find($id);
-        $setting->update($request->all());
 
-        return redirect()->route('setting.index-attendance')->with('success', 'Setting berhasil diubah');
+        DB::beginTransaction();
+        try {
+            $setting = Setting::find($id);
+            $setting->update($request->all());
+
+            DB::commit();
+            return redirect()->route('setting.index-attendance')->with('success', 'Setting berhasil diubah');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('setting.index-attendance')->with('error', 'Setting gagal diubah');
+        }
     }
 
     public function updateUser(UpdateSettingRequest $request)
@@ -55,15 +64,24 @@ class SettingController extends Controller
         $password = $request->password;
 
         $userId = auth()->user()->id;
-        $user = User::find($userId);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->school_name = $request->school_name;
-        if ($password) {
-            $user->password = bcrypt($password);
+
+        DB::beginTransaction();
+        try {
+            $user = User::find($userId);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->school_name = $request->school_name;
+            if ($password) {
+                $user->password = bcrypt($password);
+            }
+            $user->save();
+
+            DB::commit();
+            return redirect()->route('setting.index')->with('success', 'Setting berhasil diubah');
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->route('setting.index')->with('error', 'Setting gagal diubah');
         }
-        $user->save();
-        return redirect()->route('setting.index')->with('success', 'User berhasil diubah');
     }
 
     public function destroy(Setting $setting)

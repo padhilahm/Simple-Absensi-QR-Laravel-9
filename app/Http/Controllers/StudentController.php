@@ -77,14 +77,14 @@ class StudentController extends Controller
         if ($student) {
             return response()->json([
                 'code' => 200,
-                'message' => 'Siwa berhasil ditambahkan',
+                'message' => 'Siswa berhasil ditambahkan',
                 'student' => $student
             ]);
         }
 
         return response()->json([
             'code' => 500,
-            'message' => 'Siwa gagal ditambahkan'
+            'message' => 'Siswa gagal ditambahkan'
         ]);
     }
 
@@ -104,7 +104,6 @@ class StudentController extends Controller
         ]);
     }
 
-
     public function update(UpdateStudentRequest $request, Student $student)
     {
         $validate = Validator::make(
@@ -120,25 +119,29 @@ class StudentController extends Controller
             return response()->json([
                 'code' => 400,
                 'errors' => $validate->errors(),
-                'message' => 'Siwa gagal diubah'
+                'message' => 'Siswa gagal diedit'
             ]);
         }
 
-        // update the student
-        $student->update($request->all());
-        $student->save();
+        DB::beginTransaction();
+        try {
+            // update the student
+            $student->update($request->all());
+            $student->save();
 
-        if ($student) {
+            DB::commit();
             return response()->json([
                 'code' => 200,
-                'message' => 'Siwa berhasil diubah',
+                'message' => 'Siswa berhasil diedit',
                 'student' => $student
             ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'code' => 500,
+                'message' => 'Siswa gagal diedit'
+            ]);
         }
-        return response()->json([
-            'code' => 500,
-            'message' => 'Siwa gagal diubah'
-        ]);
     }
 
     public function destroy(Student $student)
@@ -146,25 +149,36 @@ class StudentController extends Controller
         if ($student->delete()) {
             return response()->json([
                 'code' => 200,
-                'message' => 'Siwa berhasil dihapus'
+                'message' => 'Siswa berhasil dihapus'
             ]);
         }
         return response()->json([
             'code' => 500,
-            'message' => 'Siwa gagal dihapus'
+            'message' => 'Siswa gagal dihapus'
         ]);
     }
 
     public function destroyMulti()
     {
-        $students = Student::whereIn('id', request('ids'))->get();
-        $students->each(function ($student) {
-            $student->delete();
-        });
-        return response()->json([
-            'code' => 200,
-            'message' => 'Siwa berhasil dihapus'
-        ]);
+        DB::beginTransaction();
+        try {
+            $students = Student::whereIn('id', request('ids'))->get();
+            $students->each(function ($student) {
+                $student->delete();
+            });
+
+            DB::commit();
+            return response()->json([
+                'code' => 200,
+                'message' => 'Siswa berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json([
+                'code' => 500,
+                'message' => 'Siswa gagal dihapus'
+            ]);
+        }
     }
 
     public function card($studentClassId = '')

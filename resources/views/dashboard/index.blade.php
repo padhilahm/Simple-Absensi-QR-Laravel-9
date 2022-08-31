@@ -1,5 +1,4 @@
-{{-- @dd($classess[0]->students[2]->attendances) --}}
-{{-- @dd($attendances) --}}
+{{-- @dd($classess); --}}
 
 @extends('template.main')
 
@@ -33,7 +32,7 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <div class="d-flex flex-column align-items-center gap-1">
-                                    <h2 class="mb-2">{{ $class->students()->count() }}</h2>
+                                    <h2 class="mb-2">{{ $class->total }}</h2>
                                     <span>Jumlah Siswa</span>
                                 </div>
                                 <div id="orderStatisticsChart-{{ $class->id }}"></div>
@@ -56,10 +55,10 @@
                                                 <small class="text-muted">{{ $student->student_id_number }}</small>
                                             </div>
                                             <div class="user-progress">
-                                                @if ($student->attendances->where('date', date('Y-m-d'))->count() > 0)
-                                                    <span class="badge bg-success">Hadir</span>
+                                                @if ($student->attendance_status == 'Hadir')
+                                                    <span class="badge bg-success">{{ $student->attendance_status }}</span>
                                                 @else
-                                                    <span class="badge bg-danger">Tidak</span>
+                                                    <span class="badge bg-danger">{{ $student->attendance_status }}</span>
                                                 @endif
                                                 {{-- <small class="fw-semibold">82.5k</small> --}}
                                             </div>
@@ -91,18 +90,8 @@
 @section('script')
     @foreach ($classess as $class)
         @php
-            $present = $class
-                ->students()
-                ->whereHas('attendances', function ($query) {
-                    $query->where('date', date('Y-m-d'));
-                })
-                ->count();
-            $absent = $class
-                ->students()
-                ->whereDoesntHave('attendances', function ($query) {
-                    $query->where('date', date('Y-m-d'));
-                })
-                ->count();
+            $present = $class->present;
+            $absent = $class->absent;
         @endphp
         <script>
             let cardColor_{{ $class->id }}, headingColor_{{ $class->id }}, axisColor_{{ $class->id }},
