@@ -64,7 +64,7 @@ class DashboardController extends Controller
         $i = 0;
         // status kehadiran
         foreach ($students as $student) {
-            $status = $student->attendances->where('date', date('Y-m-d'))->count();
+            $status = $student->attendances->where('date', $date)->count();
             if ($status > 0) {
                 $students[$i]['attendance_status'] = 'Hadir';
             } else {

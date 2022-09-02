@@ -74,7 +74,7 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th width="3%">No</th>
+                                    <th width="3%">Kode</th>
                                     <th>Nama</th>
                                     <th class="text-end">Aksi</th>
                                 </tr>
@@ -82,7 +82,7 @@
                             <tbody class="table-border-bottom-0">
                                 @foreach ($classes as $class)
                                     <tr>
-                                        <td>{{ $loop->iteration }}</td>
+                                        <td>{{ $class->id }}</td>
                                         <td>{{ $class->name }}</td>
                                         <td class="text-end">
                                             <button type="button" class="btn btn-sm btn-primary"

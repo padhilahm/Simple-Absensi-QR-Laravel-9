@@ -21,7 +21,7 @@
             <div class="col-md-4 mb-3">
                 <div class="card">
                     <div class="card-header">
-                        <h4>Tambah Kelas</h4>
+                        <h4>Filter Tanggal Absen</h4>
                     </div>
                     <div class="card-body">
                         <form method="post" id="form-filter">

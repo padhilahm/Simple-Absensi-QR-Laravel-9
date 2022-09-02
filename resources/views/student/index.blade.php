@@ -30,10 +30,13 @@
                     </h3>
                 </div>
                 <div class="bd-highlight pt-4">
+
                     <button type="button" class="btn btn-secondary text-end" data-bs-toggle="modal"
                         data-bs-target="#basicModal-card">Cetak Kartu</button>
+                    <button type="button" class="btn btn-success text-end" data-bs-toggle="modal"
+                        data-bs-target="#basicModal-import">Import</button>
                     {{-- <button type="button" class="btn btn-danger text-end" onclick="multi_delete()">Delete</button> --}}
-                    <button type="button" class="btn btn-primary me-3 text-end" onclick="add()">Tambah Siswa</button>
+                    <button type="button" class="btn btn-primary me-3 text-end" onclick="add()">Tambah</button>
                     <form action="">
                         <input type="text" placeholder="Search ..." class="form-control mt-3" name="search"
                             id="search">
@@ -100,7 +103,8 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title" id="exampleModalLabel1">Cetak Kartu</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
                             <div class="row">
@@ -122,6 +126,40 @@
                             </button>
                             <button type="button" class="btn btn-primary" id="btn_print">Cetak</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal -->
+            <div class="modal fade" id="basicModal-import" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel1">Import Data Siswa dari Excel</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
+                        <form action="/student-import" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            @method('POST')
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col mb-3">
+                                        <label for="email" class="form-label">Upload Excel <a
+                                                href="/assets/excel/siswa.xlsx" target="_blank">Download
+                                                Template</a></label>
+                                        <input type="file" class="form-control" name="import_excel" required
+                                            accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                                    Tutup
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="btn_import">Import</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>
@@ -375,7 +413,7 @@
                 icon: "warning",
                 buttons: true,
                 dangerMode: true,
-                buttons: ["Cancel", "Delete"],
+                buttons: ["Batal", "Hapus"],
             }).then((result) => {
                 if (result) {
                     // get all id of checkbox that is checked

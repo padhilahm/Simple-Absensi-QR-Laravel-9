@@ -6,7 +6,9 @@ use App\Models\User;
 use App\Models\Setting;
 use App\Models\Student;
 use App\Models\StudentClass;
+use App\Imports\StudentImport;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreStudentRequest;
@@ -188,5 +190,12 @@ class StudentController extends Controller
             ->where('student_class_id', $studentClassId)
             ->get();
         return view('student.card', compact('students', 'user'));
+    }
+
+    public function import()
+    {
+        $excel = Excel::import(new StudentImport, request()->file('import_excel'));
+
+        return redirect()->route('student.index')->with('success', 'Siswa berhasil diimport');
     }
 }

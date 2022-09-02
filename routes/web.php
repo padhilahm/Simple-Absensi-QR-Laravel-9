@@ -36,7 +36,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::resource('/student', StudentController::class);
     Route::get('/student-search', [StudentController::class, 'search'])->name('student.search');
     Route::delete('/student-m', [StudentController::class, 'destroyMulti'])->name('student.destroy-multi');
-    Route::get(('/student-card/{studentClassId}'), [StudentController::class, 'card'])->name('student.card');
+    Route::get('/student-card/{studentClassId}', [StudentController::class, 'card'])->name('student.card');
+    Route::post('/student-import', [StudentController::class, 'import'])->name('student.import');
 
     Route::get('/class', [StudentClassController::class, 'index'])->name('class.index');
     Route::post('/class', [StudentClassController::class, 'store'])->name('class.store');
