@@ -41,7 +41,8 @@ class StudentController extends Controller
         $data = [
             'students' => $students,
             'classes' => StudentClass::all(),
-            'no' => $no
+            'no' => $no,
+            'user' => User::find(auth()->user()->id),
         ];
         return view('student.index', $data);
     }

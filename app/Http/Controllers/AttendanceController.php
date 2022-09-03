@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Setting;
 use App\Models\Student;
 use App\Models\Attendance;
@@ -27,6 +28,7 @@ class AttendanceController extends Controller
             'start_time' => $startTime,
             'end_time' => $endTime,
             'status' => $status,
+            'user' => User::find(auth()->user()->id),
         ];
         return view('index', $data);
     }

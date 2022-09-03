@@ -58,6 +58,7 @@ class SettingController extends Controller
             'password' => 'nullable|min:8',
             're_password' => 'nullable|same:password',
             'school_name' => 'required|min:3',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:800',
         ];
 
         $request->validate($validate);
@@ -73,6 +74,19 @@ class SettingController extends Controller
             $user->school_name = $request->school_name;
             if ($password) {
                 $user->password = bcrypt($password);
+            }
+            if ($request->hasFile('photo')) {
+                // delete old photo
+                $oldPhoto = public_path('storage/images/' . $user->photo);
+                if (file_exists($oldPhoto)) {
+                    @unlink($oldPhoto);
+                }
+
+                // upload new photo
+                $photo = $request->file('photo');
+                $photoName = time() . '.' . $photo->getClientOriginalExtension();
+                $photo->move(public_path('storage/images'), $photoName);
+                $user->photo = $photoName;
             }
             $user->save();
 

@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
+use App\Models\Student;
 use App\Models\Attendance;
 use App\Models\StudentClass;
 use Illuminate\Http\Request;
-use App\Models\Student;
 
 class DashboardController extends Controller
 {
@@ -53,7 +54,8 @@ class DashboardController extends Controller
             $i++;
         }
         $data = [
-            'classess' => $classess
+            'classess' => $classess,
+            'user' => User::find(auth()->user()->id),
         ];
         return view('dashboard.index', $data);
     }
@@ -76,7 +78,8 @@ class DashboardController extends Controller
         $data = [
             'date' => $date,
             'id' => $id,
-            'students' => $students
+            'students' => $students,
+            'user' => User::find(auth()->user()->id),
         ];
         return view('dashboard.attendance', $data);
     }

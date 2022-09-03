@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'padhilahm@gmail.com',
             'password' => bcrypt('password'),
             'school_name' => 'SMA Banjarbaru',
+            'photo' => 'default.png',
         ]);
         \App\Models\Setting::factory(1)->create();
         \App\Models\StudentClass::factory(3)->create();

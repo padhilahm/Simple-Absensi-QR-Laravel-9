@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\StudentClass;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -13,7 +14,8 @@ class StudentClassController extends Controller
     public function index()
     {
         $data = [
-            'classes' => StudentClass::all()
+            'classes' => StudentClass::all(),
+            'user' => User::find(auth()->user()->id),
         ];
         return view('class.index', $data);
     }
