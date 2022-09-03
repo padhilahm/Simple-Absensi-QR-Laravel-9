@@ -27,8 +27,7 @@ class AttendanceController extends Controller
             'title' => 'Absensi',
             'start_time' => $startTime,
             'end_time' => $endTime,
-            'status' => $status,
-            'user' => User::find(auth()->user()->id),
+            'status' => $status
         ];
         return view('index', $data);
     }
