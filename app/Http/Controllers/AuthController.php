@@ -27,7 +27,7 @@ class AuthController extends Controller
             return redirect()->intended('/dashboard');
         }
 
-        return redirect()->back()->with('error', 'Invalid credentials');
+        return redirect()->route('login')->with('error', 'Invalid credentials');
     }
 
     public function register()
