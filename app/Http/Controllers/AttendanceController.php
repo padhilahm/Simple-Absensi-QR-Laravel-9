@@ -8,40 +8,37 @@ use App\Models\Student;
 use App\Models\Attendance;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreAttendanceRequest;
-use App\Http\Requests\UpdateAttendanceRequest;
 
 class AttendanceController extends Controller
 {
-    public function index()
-    {
-        $setting = Setting::first();
-        $startTime = date('H:i', strtotime($setting->attendance_start_time));
-        $endTime = date('H:i', strtotime($setting->attendance_end_time));
-        if ($startTime > date('H:i') || $endTime < date('H:i')) {
-            $status = 0;
-        } else {
-            $status = 1;
-        }
+    protected Setting $setting;
+    protected Attendance $attendance;
+    protected Student $student;
+    protected User $user;
 
-        $data = [
-            'title' => 'Absensi',
-            'start_time' => $startTime,
-            'end_time' => $endTime,
-            'status' => $status
-        ];
-        return view('index', $data);
+    public function __construct(Setting $setting, Attendance $attendance, Student $student, User $user)
+    {
+        $this->setting = $setting;
+        $this->attendance = $attendance;
+        $this->student = $student;
+        $this->user = $user;
     }
 
-    public function create()
+    public function index()
     {
-        //
+        $data = [
+            'title' => 'Absensi',
+            'start_time' => $this->setting->first()->attendance_start_time,
+            'end_time' => $this->setting->first()->attendance_end_time,
+        ];
+        return view('index', $data);
     }
 
     public function store(StoreAttendanceRequest $request)
     {
         $studentIdNumber = $request->qr_code;
 
-        $student = Student::where('student_id_number', $studentIdNumber)->first();
+        $student = $this->student->where('student_id_number', $studentIdNumber)->first();
 
         if (!$student) {
             return response()->json([
@@ -50,7 +47,7 @@ class AttendanceController extends Controller
             ]);
         }
 
-        $setting = Setting::first();
+        $setting = $this->setting->first();
         if ($setting->attendance_start_time > date('H:i:s') || $setting->attendance_end_time < date('H:i:s')) {
             return response()->json([
                 'status' => 'error',
@@ -59,9 +56,7 @@ class AttendanceController extends Controller
         }
 
         // check attendance
-        $attendance = Attendance::where('student_id', $student->id)
-            ->where('date', date('Y-m-d'))
-            ->first();
+        $attendance = $this->attendance->where('student_id', $student->id)->whereDate('created_at', date('Y-m-d'))->first();
         if ($attendance) {
             return response()->json([
                 'status' => 'success',
@@ -92,25 +87,5 @@ class AttendanceController extends Controller
                 'message' => 'Terjadi kesalahan'
             ]);
         }
-    }
-
-    public function show(Attendance $attendance)
-    {
-        //
-    }
-
-    public function edit(Attendance $attendance)
-    {
-        //
-    }
-
-    public function update(UpdateAttendanceRequest $request, Attendance $attendance)
-    {
-        //
-    }
-
-    public function destroy(Attendance $attendance)
-    {
-        //
     }
 }

@@ -43,7 +43,7 @@
                                     <small class="text-danger">{{ $errors->first('attendance_start_time') }}</small>
                                 </div>
                                 <div class="mb-3 col-md-6">
-                                    <label for="email" class="form-label">Waktu Mulai Absen</label>
+                                    <label for="email" class="form-label">Waktu Akhir Absen</label>
                                     <input class="form-control" type="time" name="attendance_end_time"
                                         value="{{ old('attendance_end_time', $setting->attendance_end_time) }}" />
                                     <small class="text-danger">{{ $errors->first('attendance_end_time') }}</small>
