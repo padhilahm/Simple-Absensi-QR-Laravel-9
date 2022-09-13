@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
+use App\Http\Requests\LoginRequest;
 
 class AuthController extends Controller
 {
@@ -16,13 +16,8 @@ class AuthController extends Controller
         return view('auth.index');
     }
 
-    public function login(Request $request)
+    public function login(LoginRequest $request)
     {
-        $this->validate($request, [
-            'email' => 'required|email',
-            'password' => 'required|min:6'
-        ]);
-
         if (auth()->attempt($request->only('email', 'password'))) {
             return redirect()->intended('/dashboard');
         }

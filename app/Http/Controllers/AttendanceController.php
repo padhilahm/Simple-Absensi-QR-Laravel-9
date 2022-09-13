@@ -67,7 +67,7 @@ class AttendanceController extends Controller
         DB::beginTransaction();
         try {
             // insert attendance
-            Attendance::create([
+            $this->attendance->create([
                 'student_id' => $student->id,
                 'student_name' => $student->name,
                 'class_name' => $student->studentClass->name,

@@ -4,7 +4,7 @@
     <div class="container-xxl">
         <div class="authentication-wrapper authentication-basic container-p-y">
             <div class="authentication-inner">
-                <!-- Register -->
+                <!-- Login -->
                 <div class="card">
                     <div class="card-body">
                         <!-- Logo -->
@@ -78,6 +78,9 @@
                                 <label for="email" class="form-label">Email atau Username</label>
                                 <input type="text" class="form-control" id="email" name="email"
                                     placeholder="Enter your email or username" autofocus />
+                                <small class="text-danger">
+                                    {{ $errors->first('email') }}
+                                </small>
                             </div>
                             <div class="mb-3 form-password-toggle">
                                 <div class="d-flex justify-content-between">
@@ -93,27 +96,17 @@
                                         aria-describedby="password" />
                                     <span class="input-group-text cursor-pointer"><i class="bx bx-hide"></i></span>
                                 </div>
+                                <small class="text-danger">
+                                    {{ $errors->first('password') }}
+                                </small>
                             </div>
-                            {{-- <div class="mb-3">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="remember-me" />
-                                    <label class="form-check-label" for="remember-me"> Remember Me </label>
-                                </div>
-                            </div> --}}
                             <div class="mb-3">
                                 <button class="btn btn-primary d-grid w-100" type="submit">Login</button>
                             </div>
                         </form>
-
-                        {{-- <p class="text-center">
-                            <span>New on our platform?</span>
-                            <a href="auth-register-basic.html">
-                                <span>Create an account</span>
-                            </a>
-                        </p> --}}
                     </div>
                 </div>
-                <!-- /Register -->
+                <!-- /Login -->
             </div>
         </div>
     </div>
