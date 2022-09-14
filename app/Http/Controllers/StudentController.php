@@ -3,46 +3,42 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Setting;
 use App\Models\Student;
 use App\Models\StudentClass;
 use App\Imports\StudentImport;
-use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreStudentRequest;
 use App\Http\Requests\UpdateStudentRequest;
+use App\Services\StudentService;
 
 class StudentController extends Controller
 {
+    protected StudentService $studentService;
+    protected User $user;
+    protected StudentClass $studentClass;
+    protected Student $student;
+
+    public function __construct(StudentService $studentService, User $user, StudentClass $studentClass, Student $student,)
+    {
+        $this->studentService = $studentService;
+        $this->user = $user;
+        $this->studentClass = $studentClass;
+        $this->student = $student;
+    }
+
     public function index()
     {
         $paginate = 10;
-
         $search = request()->query('search');
-        if ($search) {
-            $students = Student::with('studentClass')
-                ->where('name', 'like', "%$search%")
-                ->orWhere('student_id_number', 'like', "%$search%")
-                ->paginate($paginate);
-        } else {
-            $students = Student::with('studentClass')
-                ->latest()
-                ->paginate($paginate);
-        }
 
-        if (request('page')) {
-            $no = request('page') * $paginate - $paginate + 1;
-        } else {
-            return redirect()->route('student.index', ['page' => 1, 'search' => $search]);
-        }
+        $students = $this->studentService->getAll($paginate, $search);
 
         $data = [
-            'students' => $students,
-            'classes' => StudentClass::all(),
-            'no' => $no,
-            'user' => User::find(auth()->user()->id),
+            'students' => $students['students'],
+            'classes' => $this->studentClass->all(),
+            'no' => $students['no'],
+            'user' => $this->user->find(auth()->user()->id),
         ];
         return view('student.index', $data);
     }
@@ -50,7 +46,7 @@ class StudentController extends Controller
     public function search()
     {
         $search = request()->query('search');
-        $students = Student::where('name', 'like', "%$search%")
+        $students = $this->student->where('name', 'like', "%$search%")
             ->orWhere('student_id_number', 'like', "%$search%")
             ->get();
         return response()->json($students);
@@ -75,7 +71,7 @@ class StudentController extends Controller
         }
 
         // save the student
-        $student = Student::create($request->all());
+        $student = $this->student->create($request->all());
 
         if ($student) {
             return response()->json([
@@ -126,25 +122,21 @@ class StudentController extends Controller
             ]);
         }
 
-        DB::beginTransaction();
-        try {
-            // update the student
-            $student->update($request->all());
-            $student->save();
-
-            DB::commit();
+        // update the student
+        $student->update($request->all());
+        $student->save();
+        if ($student) {
             return response()->json([
                 'code' => 200,
                 'message' => 'Siswa berhasil diedit',
                 'student' => $student
             ]);
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'code' => 500,
-                'message' => 'Siswa gagal diedit'
-            ]);
         }
+
+        return response()->json([
+            'code' => 500,
+            'message' => 'Siswa gagal diedit'
+        ]);
     }
 
     public function destroy(Student $student)
@@ -163,31 +155,15 @@ class StudentController extends Controller
 
     public function destroyMulti()
     {
-        DB::beginTransaction();
-        try {
-            $students = Student::whereIn('id', request('ids'))->get();
-            $students->each(function ($student) {
-                $student->delete();
-            });
-
-            DB::commit();
-            return response()->json([
-                'code' => 200,
-                'message' => 'Siswa berhasil dihapus'
-            ]);
-        } catch (\Exception $e) {
-            DB::rollback();
-            return response()->json([
-                'code' => 500,
-                'message' => 'Siswa gagal dihapus'
-            ]);
-        }
+        return response()->json(
+            $this->studentService->multiDelete()
+        );
     }
 
     public function card($studentClassId = '')
     {
-        $user = User::find(auth()->user()->id);
-        $students = Student::with('studentClass')
+        $user = $this->user->find(auth()->user()->id);
+        $students = $this->student->with('studentClass')
             ->where('student_class_id', $studentClassId)
             ->get();
         return view('student.card', compact('students', 'user'));
@@ -195,7 +171,7 @@ class StudentController extends Controller
 
     public function import()
     {
-        $excel = Excel::import(new StudentImport, request()->file('import_excel'));
+        Excel::import(new StudentImport, request()->file('import_excel'));
 
         return redirect()->route('student.index')->with('success', 'Siswa berhasil diimport');
     }

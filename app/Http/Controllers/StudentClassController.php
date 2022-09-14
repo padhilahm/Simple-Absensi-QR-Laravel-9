@@ -4,13 +4,21 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\StudentClass;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use App\Http\Requests\StoreStudentClassRequest;
 use App\Http\Requests\UpdateStudentClassRequest;
 
 class StudentClassController extends Controller
 {
+    protected User $user;
+    protected StudentClass $studentClass;
+
+    public function __construct(User $user, StudentClass $studentClass)
+    {
+        $this->user = $user;
+        $this->studentClass = $studentClass;
+    }
+
     public function index()
     {
         $data = [
@@ -19,10 +27,7 @@ class StudentClassController extends Controller
         ];
         return view('class.index', $data);
     }
-    public function create()
-    {
-        //
-    }
+
     public function store(StoreStudentClassRequest $request)
     {
         $validate = Validator::make(
@@ -40,7 +45,7 @@ class StudentClassController extends Controller
         }
 
         // save the class
-        $class = StudentClass::create($request->all());
+        $class = $this->studentClass->create($request->all());
 
         if ($class) {
             return response()->json([
@@ -54,6 +59,7 @@ class StudentClassController extends Controller
             'message' => 'Kelas gagal ditambahkan'
         ]);
     }
+
     public function show(StudentClass $studentClass)
     {
         return response()->json([
@@ -80,24 +86,21 @@ class StudentClassController extends Controller
             ]);
         }
 
-        DB::beginTransaction();
-        try {
-            // update the student
-            $studentClass->update($request->all());
-            $studentClass->save();
+        // update the student
+        $studentClass->update($request->all());
+        $studentClass->save();
 
-            DB::commit();
+        if ($studentClass) {
             return response()->json([
                 'code' => 200,
                 'message' => 'Kelas berhasil diedit'
             ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return response()->json([
-                'code' => 500,
-                'message' => 'Kelas gagal diedit'
-            ]);
         }
+
+        return response()->json([
+            'code' => 500,
+            'message' => 'Kelas gagal diedit'
+        ]);
     }
 
     public function destroy(StudentClass $studentClass)

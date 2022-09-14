@@ -3,83 +3,35 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
-use App\Models\Student;
-use App\Models\Attendance;
-use App\Models\StudentClass;
-use Illuminate\Http\Request;
+use App\Services\DashboardService;
 
 class DashboardController extends Controller
 {
-    public function __construct()
+    protected DashboardService $dashboardService;
+    protected User $user;
+
+    public function __construct(DashboardService $dashboardService, User $user)
     {
-        // $this->middleware('auth');
+        $this->dashboardService = $dashboardService;
+        $this->user = $user;
     }
 
     public function index()
     {
-        $classess = StudentClass::with('students')->get();
-        $i = 0;
-        foreach ($classess as $class) {
-            // jumlah siswa
-            $classess[$i]['total'] = $class->students->count();
-
-            // jumlah siswa yang hadir
-            $classess[$i]['present'] = $class
-                ->students()
-                ->whereHas('attendances', function ($query) {
-                    $query->where('date', date('Y-m-d'));
-                })
-                ->count();
-
-            // jumlah siswa yang tidak hadir
-            $classess[$i]['absent'] = $class
-                ->students()
-                ->whereDoesntHave('attendances', function ($query) {
-                    $query->where('date', date('Y-m-d'));
-                })
-                ->count();
-
-            $j = 0;
-
-            // status kehadiran
-            foreach ($class->students as $student) {
-                $status = $student->attendances->where('date', date('Y-m-d'))->count();
-                if ($status > 0) {
-                    $classess[$i]['students'][$j]['attendance_status'] = 'Hadir';
-                } else {
-                    $classess[$i]['students'][$j]['attendance_status'] = 'Tidak';
-                }
-                $j++;
-            }
-            $i++;
-        }
         $data = [
-            'classess' => $classess,
-            'user' => User::find(auth()->user()->id),
+            'classess' => $this->dashboardService->mainDashboard(),
+            'user' => $this->user->find(auth()->user()->id),
         ];
         return view('dashboard.index', $data);
     }
 
     public function attendance($id = '', $date = '')
     {
-        $students = Student::with('attendances')->where('student_class_id', $id)->get();
-        $i = 0;
-        // status kehadiran
-        foreach ($students as $student) {
-            $status = $student->attendances->where('date', $date)->count();
-            if ($status > 0) {
-                $students[$i]['attendance_status'] = 'Hadir';
-            } else {
-                $students[$i]['attendance_status'] = 'Tidak';
-            }
-            $i++;
-        }
-
         $data = [
             'date' => $date,
             'id' => $id,
-            'students' => $students,
-            'user' => User::find(auth()->user()->id),
+            'students' => $this->dashboardService->attendanceDashboard($id, $date),
+            'user' => $this->user->find(auth()->user()->id),
         ];
         return view('dashboard.attendance', $data);
     }

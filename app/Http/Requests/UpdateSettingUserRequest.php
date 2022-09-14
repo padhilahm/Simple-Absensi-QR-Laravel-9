@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateSettingRequest extends FormRequest
+class UpdateSettingUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -24,8 +24,12 @@ class UpdateSettingRequest extends FormRequest
     public function rules()
     {
         return [
-            'attendance_start_time' => 'required',
-            'attendance_end_time' => 'required',
+            'name' => 'required|min:3',
+            'email' => 'required|email',
+            'password' => 'nullable|min:8',
+            're_password' => 'nullable|same:password',
+            'school_name' => 'required|min:3',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:800',
         ];
     }
 }

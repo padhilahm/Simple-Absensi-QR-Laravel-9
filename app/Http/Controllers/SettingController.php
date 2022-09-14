@@ -2,104 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Setting;
-use App\Http\Requests\StoreSettingRequest;
-use App\Http\Requests\UpdateSettingRequest;
 use App\Models\User;
-use Illuminate\Support\Facades\DB;
+use App\Models\Setting;
+use App\Services\SettingService;
+use App\Http\Requests\UpdateSettingRequest;
+use App\Http\Requests\UpdateSettingUserRequest;
 
 class SettingController extends Controller
 {
+    protected Setting $setting;
+    protected User $user;
+    protected SettingService $settingService;
+
+    public function __construct(Setting $setting, User $user, SettingService $settingService)
+    {
+        $this->setting = $setting;
+        $this->user = $user;
+        $this->settingService = $settingService;
+    }
+
     public function index()
     {
-        $userId = auth()->user()->id;
-        $setting = Setting::first();
-        $user = User::find($userId);
+        $setting = $this->setting->first();
+        $user = $this->user->find(auth()->user()->id);
         return view('setting.index-attendance', compact('setting', 'user'));
     }
 
     public function indexUser()
     {
-        $userId = auth()->user()->id;
-        $setting = Setting::first();
-        $user = User::find($userId);
+        $setting = $this->setting->first();
+        $user = $this->user->find(auth()->user()->id);
         return view('setting.index', compact('setting', 'user'));
     }
 
     public function update(UpdateSettingRequest $request, Setting $setting)
     {
-        $validate = [
-            'attendance_start_time' => 'required',
-            'attendance_end_time' => 'required',
-        ];
+        // update setting
+        $setting =  $this->setting->find($request->id);
+        $setting->update($request->all());
 
-        $request->validate($validate);
-
-        $id = $request->id;
-
-        DB::beginTransaction();
-        try {
-            $setting = Setting::find($id);
-            $setting->update($request->all());
-
-            DB::commit();
+        if ($setting) {
             return redirect()->route('setting.index-attendance')->with('success', 'Setting berhasil diubah');
-        } catch (\Exception $e) {
-            DB::rollback();
+        } else {
             return redirect()->route('setting.index-attendance')->with('error', 'Setting gagal diubah');
         }
     }
 
-    public function updateUser(UpdateSettingRequest $request)
+    public function updateUser(UpdateSettingUserRequest $request)
     {
-        $validate = [
-            'name' => 'required|min:3',
-            'email' => 'required|email',
-            'password' => 'nullable|min:8',
-            're_password' => 'nullable|same:password',
-            'school_name' => 'required|min:3',
-            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:800',
-        ];
+        $updateUser = $this->settingService->updateUser($request);
 
-        $request->validate($validate);
-        $password = $request->password;
-
-        $userId = auth()->user()->id;
-
-        DB::beginTransaction();
-        try {
-            $user = User::find($userId);
-            $user->name = $request->name;
-            $user->email = $request->email;
-            $user->school_name = $request->school_name;
-            if ($password) {
-                $user->password = bcrypt($password);
-            }
-            if ($request->hasFile('photo')) {
-                // delete old photo
-                $oldPhoto = public_path('storage/images/' . $user->photo);
-                if (file_exists($oldPhoto)) {
-                    @unlink($oldPhoto);
-                }
-
-                // upload new photo
-                $photo = $request->file('photo');
-                $photoName = time() . '.' . $photo->getClientOriginalExtension();
-                $photo->move(public_path('storage/images'), $photoName);
-                $user->photo = $photoName;
-            }
-            $user->save();
-
-            DB::commit();
-            return redirect()->route('setting.index')->with('success', 'Setting berhasil diubah');
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->route('setting.index')->with('error', 'Setting gagal diubah');
+        if ($updateUser) {
+            return redirect()->route('setting.index')->with('success', 'User berhasil diubah');
+        } else {
+            return redirect()->route('setting.index')->with('error', 'User gagal diubah');
         }
-    }
-
-    public function destroy(Setting $setting)
-    {
-        //
     }
 }
